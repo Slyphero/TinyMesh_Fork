@@ -50,10 +50,10 @@ void MainWindow::editingSceneRight(const Ray&)
 
 void MainWindow::BoxMeshExample()
 {
-	Mesh boxMesh = Mesh(Box(1.0));
+    Mesh boxMesh = Mesh(Box(1.0));
 
 	std::vector<Color> cols;
-	cols.resize(boxMesh.Vertexes());
+    cols.resize(boxMesh.Vertexes());
     for (size_t i = 0; i < cols.size(); i++)
 		cols[i] = Color(double(i) / 6.0, fmod(double(i) * 39.478378, 1.0), 0.0);
 

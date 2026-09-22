@@ -13,6 +13,7 @@ VPATH += AppTinyMesh
 SOURCES += \
     AppTinyMesh/Source/box.cpp \
     AppTinyMesh/Source/evector.cpp \
+    AppTinyMesh/Source/implicit_sphere.cpp \
     AppTinyMesh/Source/implicits.cpp \
     AppTinyMesh/Source/main.cpp \
     AppTinyMesh/Source/camera.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     AppTinyMesh/Include/box.h \
     AppTinyMesh/Include/camera.h \
     AppTinyMesh/Include/color.h \
+    AppTinyMesh/Include/implicit_sphere.h \
     AppTinyMesh/Include/implicits.h \
     AppTinyMesh/Include/mathematics.h \
     AppTinyMesh/Include/mesh.h \
