@@ -54,6 +54,7 @@ OBJECTS_DIR   = ./
 
 SOURCES       = ../../AppTinyMesh/Source/box.cpp \
 		../../AppTinyMesh/Source/evector.cpp \
+		../../AppTinyMesh/Source/implicit_sphere.cpp \
 		../../AppTinyMesh/Source/implicits.cpp \
 		../../AppTinyMesh/Source/main.cpp \
 		../../AppTinyMesh/Source/camera.cpp \
@@ -67,6 +68,7 @@ SOURCES       = ../../AppTinyMesh/Source/box.cpp \
 		moc_realtime.cpp
 OBJECTS       = box.o \
 		evector.o \
+		implicit_sphere.o \
 		implicits.o \
 		main.o \
 		camera.o \
@@ -296,6 +298,7 @@ DIST          = /home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/qt_config.prf \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/spec_post.prf \
+		../../.qmake.stash \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/toolchain.prf \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/default_pre.prf \
@@ -320,6 +323,7 @@ DIST          = /home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../QtCreatorProject.pro ../../AppTinyMesh/Include/box.h \
 		../../AppTinyMesh/Include/camera.h \
 		../../AppTinyMesh/Include/color.h \
+		../../AppTinyMesh/Include/implicit_sphere.h \
 		../../AppTinyMesh/Include/implicits.h \
 		../../AppTinyMesh/Include/mathematics.h \
 		../../AppTinyMesh/Include/mesh.h \
@@ -328,6 +332,7 @@ DIST          = /home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/spec_pre.prf \
 		../../AppTinyMesh/Include/realtime.h \
 		../../AppTinyMesh/Include/shader-api.h ../../AppTinyMesh/Source/box.cpp \
 		../../AppTinyMesh/Source/evector.cpp \
+		../../AppTinyMesh/Source/implicit_sphere.cpp \
 		../../AppTinyMesh/Source/implicits.cpp \
 		../../AppTinyMesh/Source/main.cpp \
 		../../AppTinyMesh/Source/camera.cpp \
@@ -566,6 +571,7 @@ Makefile: ../../QtCreatorProject.pro /home/raphael/Qt/6.11.2/gcc_64/mkspecs/linu
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/qt_config.prf \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/toolchain.prf \
 		/home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/default_pre.prf \
@@ -811,6 +817,7 @@ Makefile: ../../QtCreatorProject.pro /home/raphael/Qt/6.11.2/gcc_64/mkspecs/linu
 /home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/qt_config.prf:
 /home/raphael/Qt/6.11.2/gcc_64/mkspecs/linux-g++/qmake.conf:
 /home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/exclusive_builds.prf:
 /home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/toolchain.prf:
 /home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/default_pre.prf:
@@ -853,8 +860,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /home/raphael/Qt/6.11.2/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../../AppTinyMesh/Include/box.h ../../AppTinyMesh/Include/camera.h ../../AppTinyMesh/Include/color.h ../../AppTinyMesh/Include/implicits.h ../../AppTinyMesh/Include/mathematics.h ../../AppTinyMesh/Include/mesh.h ../../AppTinyMesh/Include/meshcolor.h ../../AppTinyMesh/Include/qte.h ../../AppTinyMesh/Include/realtime.h ../../AppTinyMesh/Include/shader-api.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../AppTinyMesh/Source/box.cpp ../../AppTinyMesh/Source/evector.cpp ../../AppTinyMesh/Source/implicits.cpp ../../AppTinyMesh/Source/main.cpp ../../AppTinyMesh/Source/camera.cpp ../../AppTinyMesh/Source/mesh.cpp ../../AppTinyMesh/Source/meshcolor.cpp ../../AppTinyMesh/Source/mesh-widget.cpp ../../AppTinyMesh/Source/qtemainwindow.cpp ../../AppTinyMesh/Source/ray.cpp ../../AppTinyMesh/Source/shader-api.cpp ../../AppTinyMesh/Source/triangle.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../../AppTinyMesh/Include/box.h ../../AppTinyMesh/Include/camera.h ../../AppTinyMesh/Include/color.h ../../AppTinyMesh/Include/implicit_sphere.h ../../AppTinyMesh/Include/implicits.h ../../AppTinyMesh/Include/mathematics.h ../../AppTinyMesh/Include/mesh.h ../../AppTinyMesh/Include/meshcolor.h ../../AppTinyMesh/Include/qte.h ../../AppTinyMesh/Include/realtime.h ../../AppTinyMesh/Include/shader-api.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../AppTinyMesh/Source/box.cpp ../../AppTinyMesh/Source/evector.cpp ../../AppTinyMesh/Source/implicit_sphere.cpp ../../AppTinyMesh/Source/implicits.cpp ../../AppTinyMesh/Source/main.cpp ../../AppTinyMesh/Source/camera.cpp ../../AppTinyMesh/Source/mesh.cpp ../../AppTinyMesh/Source/meshcolor.cpp ../../AppTinyMesh/Source/mesh-widget.cpp ../../AppTinyMesh/Source/qtemainwindow.cpp ../../AppTinyMesh/Source/ray.cpp ../../AppTinyMesh/Source/shader-api.cpp ../../AppTinyMesh/Source/triangle.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../AppTinyMesh/UI/interface.ui $(DISTDIR)/
 
 
@@ -1367,6 +1374,14 @@ box.o: ../../AppTinyMesh/Source/box.cpp ../../AppTinyMesh/Include/box.h \
 
 evector.o: ../../AppTinyMesh/Source/evector.cpp ../../AppTinyMesh/Include/mathematics.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o evector.o ../../AppTinyMesh/Source/evector.cpp
+
+implicit_sphere.o: ../../AppTinyMesh/Source/implicit_sphere.cpp ../../AppTinyMesh/Include/implicit_sphere.h \
+		../../AppTinyMesh/Include/implicits.h \
+		../../AppTinyMesh/Include/mesh.h \
+		../../AppTinyMesh/Include/box.h \
+		../../AppTinyMesh/Include/mathematics.h \
+		../../AppTinyMesh/Include/ray.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o implicit_sphere.o ../../AppTinyMesh/Source/implicit_sphere.cpp
 
 implicits.o: ../../AppTinyMesh/Source/implicits.cpp ../../AppTinyMesh/Include/implicits.h \
 		../../AppTinyMesh/Include/mesh.h \
