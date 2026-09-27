@@ -6,7 +6,7 @@
 class SDF
 {
 public:
-    virtual double Value(const Vector&) const;
+    virtual double Value(const Vector&) const = 0;
 protected:
 };
 
