@@ -27,4 +27,20 @@ private:
     double m_inverseSquaredRadius;
 };
 
+class BlobCapsule : public Blob
+{
+public:
+    BlobCapsule(double radius, const Vector& p1, const Vector& p2) :
+        m_radius(radius),
+        m_p1(p1),
+        m_p2(p2) {}
+
+    double Value(const Vector& p) const override;
+private:
+    double m_radius;
+    Vector m_p1;
+    Vector m_p2;
+};
+
+
 #endif // BLOB_H
