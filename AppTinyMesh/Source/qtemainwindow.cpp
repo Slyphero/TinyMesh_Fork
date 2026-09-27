@@ -81,7 +81,6 @@ void MainWindow::BlobSphereExample()
 {
     AnalyticScalarField implicit;
     BlobSphere blobSphere(2.0, Vector(0.0, 0.0, 0.0));
-
     UpdateGeometry();
 }
 
