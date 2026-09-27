@@ -7,6 +7,7 @@ const double AnalyticScalarField::Epsilon = 1e-6;
 */
 AnalyticScalarField::AnalyticScalarField()
 {
+
 }
 
 /*!
@@ -16,6 +17,11 @@ AnalyticScalarField::AnalyticScalarField()
 double AnalyticScalarField::Value(const Vector& p) const
 {
   return Norm(p) - 1.0;
+}
+
+void AnalyticScalarField::AddBlob(const std::shared_ptr<Blob> blob)
+{
+    blobsTable.push_back(blob);
 }
 
 /*!

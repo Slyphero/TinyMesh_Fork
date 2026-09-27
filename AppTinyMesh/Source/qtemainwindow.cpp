@@ -77,6 +77,14 @@ void MainWindow::SphereImplicitExample()
   UpdateGeometry();
 }
 
+void MainWindow::BlobSphereExample()
+{
+    AnalyticScalarField implicit;
+    BlobSphere blobSphere(2.0, Vector(0.0, 0.0, 0.0));
+
+    UpdateGeometry();
+}
+
 void MainWindow::UpdateGeometry()
 {
 	meshWidget->ClearAll();
