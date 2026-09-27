@@ -22,6 +22,7 @@ SOURCES += \
     AppTinyMesh/Source/mesh-widget.cpp \
     AppTinyMesh/Source/qtemainwindow.cpp \
     AppTinyMesh/Source/ray.cpp \
+    AppTinyMesh/Source/sdf.cpp \
     AppTinyMesh/Source/shader-api.cpp \
     AppTinyMesh/Source/triangle.cpp \
 
@@ -36,6 +37,7 @@ HEADERS += \
     AppTinyMesh/Include/meshcolor.h \
     AppTinyMesh/Include/qte.h \
     AppTinyMesh/Include/realtime.h \
+    AppTinyMesh/Include/sdf.h \
     AppTinyMesh/Include/shader-api.h \
 
 FORMS += \

@@ -1,14 +1,26 @@
 #ifndef SDF_H
 #define SDF_H
 
-#include "implicits.h"
+#include "mathematics.h"
 
-class SDF : public AnalyticScalarField
+class SDF
 {
 public:
-    virtual double Value(const Vector&) const = 0;
+    virtual double Value(const Vector&) const;
+protected:
+};
 
-    virtual ~SDF() = default;
+class SDFSphere : public SDF
+{
+public:
+    SDFSphere(double radius, const Vector& center) :
+        m_radius(radius),
+        m_center(center) {}
+
+    double Value(const Vector& p) const override;
+private:
+    double m_radius;
+    Vector m_center;
 };
 
 #endif // SDF_H

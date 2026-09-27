@@ -15,7 +15,7 @@ protected:
 class BlobSphere : public Blob
 {
 public:
-    BlobSphere(double radius, Vector center) :
+    BlobSphere(double radius, const Vector& center) :
         m_radius(radius),
         m_center(center),
         m_inverseSquaredRadius(1 / m_radius * m_radius) {}
