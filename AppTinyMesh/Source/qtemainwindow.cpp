@@ -29,7 +29,8 @@ void MainWindow::CreateActions()
 {
 	// Buttons
     connect(uiw->boxMesh, SIGNAL(clicked()), this, SLOT(BoxMeshExample()));
-    connect(uiw->sphereImplicit, SIGNAL(clicked()), this, SLOT(SphereImplicitExample()));
+    // connect(uiw->sphereImplicit, SIGNAL(clicked()), this, SLOT(SphereImplicitExample()));
+    connect(uiw->sphereImplicit, SIGNAL(clicked()), this, SLOT(BlobSphereExample()));
     connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
     connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
     connect(uiw->radioShadingButton_1, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
@@ -80,7 +81,25 @@ void MainWindow::SphereImplicitExample()
 void MainWindow::BlobSphereExample()
 {
     AnalyticScalarField implicit;
-    BlobSphere blobSphere(2.0, Vector(0.0, 0.0, 0.0));
+
+    std::shared_ptr<Blob> blobSphere = std::make_shared<BlobSphere>(1.0, Vector(0.0, 0.0, 0.0));
+    implicit.AddBlob(blobSphere);
+
+    std::shared_ptr<Blob> blobSphere2 = std::make_shared<BlobSphere>(1.0, Vector(1.0, 0.0, 0.0));
+    implicit.AddBlob(blobSphere2);
+
+    std::shared_ptr<Blob> blobSphere3 = std::make_shared<BlobSphere>(1.0, Vector(2.0, 0.0, 0.0));
+    implicit.AddBlob(blobSphere3);
+
+    Mesh implicitMesh;
+    implicit.Polygonize(31, implicitMesh, Box(3.0));
+
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+    for (size_t i = 0; i < cols.size(); ++i)
+        cols[i] = Color(0.2, 0.6, 0.9);
+
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
     UpdateGeometry();
 }
 

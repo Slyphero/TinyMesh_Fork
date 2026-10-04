@@ -18,7 +18,7 @@ public:
     BlobSphere(double radius, const Vector& center) :
         m_radius(radius),
         m_center(center),
-        m_inverseSquaredRadius(1.0 / m_radius * m_radius) {}
+        m_inverseSquaredRadius(1.0 / (m_radius * m_radius)) {}
 
     double Value(const Vector& p) const override;
 private:

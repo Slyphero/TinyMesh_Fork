@@ -16,7 +16,12 @@ AnalyticScalarField::AnalyticScalarField()
 */
 double AnalyticScalarField::Value(const Vector& p) const
 {
-  return Norm(p) - 1.0;
+    double totalValue = 0.0;
+
+    for (std::shared_ptr<Blob> blob : blobsTable)
+        totalValue += blob->Value(p);
+
+    return totalValue - 0.2;
 }
 
 void AnalyticScalarField::AddBlob(const std::shared_ptr<Blob> blob)
