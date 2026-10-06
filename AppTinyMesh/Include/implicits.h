@@ -33,3 +33,10 @@ protected:
   static int edgeTable[256];    //!< Array storing straddling edges for every marching cubes configuration.
   std::vector<std::shared_ptr<Blob>> blobsTable;
 };
+
+class AnalyticBlob : public AnalyticScalarField
+{
+protected:
+public:
+    double Value(const Vector& p) const;
+};

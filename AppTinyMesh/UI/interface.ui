@@ -132,6 +132,19 @@ p, li { white-space: pre-wrap; }
         <bool>false</bool>
        </property>
       </widget>
+      <widget class="QPushButton" name="blob">
+       <property name="geometry">
+        <rect>
+         <x>140</x>
+         <y>50</y>
+         <width>96</width>
+         <height>27</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Blob</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>
@@ -189,7 +202,7 @@ p, li { white-space: pre-wrap; }
          </rect>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
        <widget class="QLabel" name="label_3">
@@ -218,7 +231,7 @@ p, li { white-space: pre-wrap; }
          <string/>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
         </property>
        </widget>
       </widget>
@@ -293,7 +306,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>1200</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
