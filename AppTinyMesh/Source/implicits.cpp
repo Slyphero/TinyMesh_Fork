@@ -22,14 +22,29 @@ double AnalyticScalarField::Value(const Vector& p) const
 double AnalyticBlob::Value(const Vector& p) const
 {
     double total = 0.0;
+
     for (std::shared_ptr<Blob> blob: blobsTable)
         total += blob->Value(p);
+
     return total - 0.2;
 }
 
-void AnalyticScalarField::AddBlob(const std::shared_ptr<Blob> blob)
+
+void AnalyticBlob::AddBlob(const std::shared_ptr<Blob> blob)
 {
     blobsTable.push_back(blob);
+}
+
+
+void AnalyticTree::SetRoot(std::shared_ptr<ImplicitNode> root)
+{
+    m_root = root;
+}
+
+
+double AnalyticTree::Value(const Vector& p) const
+{
+    return m_root->Value(p);
 }
 
 /*!

@@ -30,6 +30,7 @@ public slots:
   void BoxMeshExample();
   void SphereImplicitExample();
   void BlobSphereExample();
+  void TreeExample();
   void ResetCamera();
   void UpdateMaterial();
 };

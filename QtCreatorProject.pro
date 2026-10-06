@@ -11,6 +11,8 @@ INCLUDEPATH += $$(OUT_PWD)
 VPATH += AppTinyMesh
 
 SOURCES += \
+    AppTinyMesh/Source/ImplicitBlob.cpp \
+    AppTinyMesh/Source/ImplicitOperators.cpp \
     AppTinyMesh/Source/blob.cpp \
     AppTinyMesh/Source/box.cpp \
     AppTinyMesh/Source/evector.cpp \
@@ -27,6 +29,9 @@ SOURCES += \
     AppTinyMesh/Source/triangle.cpp \
 
 HEADERS += \
+    AppTinyMesh/Include/ImplicitBlob.h \
+    AppTinyMesh/Include/ImplicitNode.h \
+    AppTinyMesh/Include/ImplicitOperators.h \
     AppTinyMesh/Include/blob.h \
     AppTinyMesh/Include/box.h \
     AppTinyMesh/Include/camera.h \

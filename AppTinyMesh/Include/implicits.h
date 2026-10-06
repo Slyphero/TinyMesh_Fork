@@ -8,6 +8,9 @@
 
 #include "mesh.h"
 #include "blob.h"
+#include "ImplicitNode.h"
+#include "ImplicitBlob.h"
+#include "ImplicitOperators.h"
 
 class AnalyticScalarField
 {
@@ -25,7 +28,6 @@ public:
 
   virtual void Polygonize(int, Mesh&, const Box&, const double& = 1e-4) const;
 
-  void AddBlob(const std::shared_ptr<Blob> blob);
 protected:
   static const double Epsilon; //!< Epsilon value for partial derivatives
 protected:
@@ -34,9 +36,28 @@ protected:
   std::vector<std::shared_ptr<Blob>> blobsTable;
 };
 
+
 class AnalyticBlob : public AnalyticScalarField
 {
 protected:
 public:
     double Value(const Vector& p) const;
+    void AddBlob(const std::shared_ptr<Blob> blob);
+};
+
+class AnalyticSDF : public AnalyticScalarField
+{
+protected:
+public:
+    double Value(const Vector& p) const;
+};
+
+
+class AnalyticTree : public AnalyticScalarField
+{
+public:
+    double Value(const Vector& p) const;
+    void SetRoot(std::shared_ptr<ImplicitNode> root);
+private:
+    std::shared_ptr<ImplicitNode> m_root;
 };

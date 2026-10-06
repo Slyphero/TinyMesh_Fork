@@ -31,6 +31,7 @@ void MainWindow::CreateActions()
     connect(uiw->boxMesh, SIGNAL(clicked()), this, SLOT(BoxMeshExample()));
     connect(uiw->sphereImplicit, SIGNAL(clicked()), this, SLOT(SphereImplicitExample()));
     connect(uiw->blob, SIGNAL(clicked()), this, SLOT(BlobSphereExample()));
+    connect(uiw->tree, SIGNAL(clicked()), this, SLOT(TreeExample()));
     connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
     connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
     connect(uiw->radioShadingButton_1, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
@@ -92,6 +93,37 @@ void MainWindow::BlobSphereExample()
     cols.resize(implicitMesh.Vertexes());
     for (size_t i = 0; i < cols.size(); ++i)
         cols[i] = Color(0.2, 0.6, 0.9);
+
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+    UpdateGeometry();
+}
+
+void MainWindow::TreeExample()
+{
+    AnalyticTree tree;
+    Mesh implicitMesh;
+
+    std::shared_ptr<ImplicitBlob> blob1 = std::make_shared<ImplicitBlob>();
+    std::shared_ptr<ImplicitBlob> blob2 = std::make_shared<ImplicitBlob>();
+
+    for (int i = 0; i < 4; i++)
+        blob1->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(1.0 * i, 0.0, 0.0)));
+
+    for (int i = 0; i < 5; i++)
+        blob2->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(1.0 * i, 3.0, 0.0)));
+
+    std::shared_ptr<ImplicitNode> root = std::make_shared<ImplicitUnion>(blob1, blob2);
+
+    tree.SetRoot(root);
+
+    tree.Polygonize(31, implicitMesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = Color(0.2, 0.6, 0.9);
+    }
 
     meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
     UpdateGeometry();

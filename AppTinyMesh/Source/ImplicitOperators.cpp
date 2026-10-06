@@ -1,0 +1,16 @@
+#include "ImplicitOperators.h"
+
+double ImplicitUnion::Value(const Vector& p) const
+{
+    return std::min(m_left->Value(p), m_right->Value(p));
+}
+
+double ImplicitIntersection::Value(const Vector& p) const
+{
+    return std::max(m_left->Value(p), m_right->Value(p));
+}
+
+double ImplicitDifference::Value(const Vector& p) const
+{
+    return std::max(m_left->Value(p), -m_right->Value(p));
+}

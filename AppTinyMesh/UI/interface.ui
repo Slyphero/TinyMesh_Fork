@@ -137,12 +137,25 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>140</x>
          <y>50</y>
+         <width>81</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Blob</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="tree">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>90</y>
          <width>96</width>
          <height>27</height>
         </rect>
        </property>
        <property name="text">
-        <string>Blob</string>
+        <string>Tree</string>
        </property>
       </widget>
      </widget>
