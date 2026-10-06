@@ -107,16 +107,16 @@ void MainWindow::TreeExample()
     std::shared_ptr<ImplicitBlob> blob2 = std::make_shared<ImplicitBlob>();
 
     for (int i = 0; i < 4; i++)
-        blob1->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(1.0 * i, 0.0, 0.0)));
+        blob1->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(1.2 * i, 0.0, 0.0)));
 
     for (int i = 0; i < 5; i++)
-        blob2->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(1.0 * i, 3.0, 0.0)));
+        blob2->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(1.2 * i, 3.0, 0.0)));
 
     std::shared_ptr<ImplicitNode> root = std::make_shared<ImplicitUnion>(blob1, blob2);
 
     tree.SetRoot(root);
 
-    tree.Polygonize(31, implicitMesh, Box(10.0));
+    tree.Polygonize(128, implicitMesh, Box(10.0));
 
     std::vector<Color> cols;
     cols.resize(implicitMesh.Vertexes());

@@ -48,7 +48,7 @@ public:
     double Value(const Vector& p) const;
     void AddPotential(std::shared_ptr<Potential> potential);
 private:
-    double m_threshold = 0.5;
+    double m_threshold = 0.1;
     std::vector<std::shared_ptr<Potential>> m_potentials;
 };
 
