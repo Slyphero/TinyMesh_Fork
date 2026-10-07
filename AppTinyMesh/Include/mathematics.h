@@ -88,7 +88,7 @@ class Vector
 protected:
   double c[3]; //!< Components.
 public:
-  //! Empty 
+  //! Empty
   Vector() {}
 
   explicit Vector(double);
