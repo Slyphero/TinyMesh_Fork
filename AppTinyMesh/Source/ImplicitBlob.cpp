@@ -37,16 +37,11 @@ double PotentialCapsule::Value(const Vector &p) const {
   double squaredDistance;
   double ratio;
 
-  // p1p2 . p1p: p "before" p1
   if (p1p2 * p1p < 0.0) {
     squaredDistance = SquaredNorm(p - m_p1);
-  }
-  // p2p1 . p2p: p "after" p2
-  else if (p2p1 * p2p < 0.0) {
+  } else if (p2p1 * p2p < 0.0) {
     squaredDistance = SquaredNorm(p - m_p2);
-  }
-  // p between p1 and p2
-  else {
+  } else {
     double dp = p1p2 * p1p;
     double len = p1p2 * p1p2;
     squaredDistance = (p1p * p1p) - (dp * dp) / (len + 0.000001);
