@@ -2,6 +2,7 @@
 #define SDF_H
 
 #include "mathematics.h"
+#include "ImplicitNode.h"
 
 class SDF
 {
@@ -10,7 +11,7 @@ public:
 protected:
 };
 
-class SDFSphere : public SDF
+class SDFSphere : public ImplicitNode
 {
 public:
     SDFSphere(double radius, const Vector& center) :
@@ -23,7 +24,7 @@ private:
     Vector m_center;
 };
 
-class SDFCapsule : public SDF
+class SDFCapsule : public ImplicitNode
 {
 public:
     SDFCapsule(double radius, const Vector& p1, const Vector& p2) :

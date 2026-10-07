@@ -11,6 +11,7 @@
 #include "ImplicitNode.h"
 #include "ImplicitBlob.h"
 #include "ImplicitOperators.h"
+#include "sdf.h"
 
 class AnalyticScalarField
 {

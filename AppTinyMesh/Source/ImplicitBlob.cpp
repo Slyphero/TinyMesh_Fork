@@ -44,17 +44,17 @@ double PotentialCapsule::Value(const Vector& p) const
     double squaredDistance;
     double ratio;
 
-   	// p1p2 . p1p: p "before" p1
+    // p1p2 . p1p: p "before" p1
     if (p1p2 * p1p < 0.0)
     {
     	squaredDistance = SquaredNorm(p - m_p1);
     }
-   	// p2p1 . p2p: p "after" p2
+    // p2p1 . p2p: p "after" p2
     else if (p2p1 * p2p < 0.0)
     {
     	squaredDistance = SquaredNorm(p - m_p2);
     }
-   	// p between p1 and p2
+    // p between p1 and p2
     else
     {
     	double dp = p1p2 * p1p;
@@ -62,9 +62,9 @@ double PotentialCapsule::Value(const Vector& p) const
       	squaredDistance = (p1p * p1p) - (dp * dp) / (len + 0.000001);
     }
 
-   	ratio = (squaredDistance * m_inverseSquaredRadius);
-   	if (ratio > 1.0)
-         return 0;
+    ratio = (squaredDistance * m_inverseSquaredRadius);
+    if (ratio > 1.0)
+        return 0;
 
     return (1 - ratio) * (1 - ratio);
 }
