@@ -2,6 +2,7 @@
 #define IMPLICITOPERATORS_H
 
 #include "ImplicitNode.h"
+#include "mathematics.h"
 
 class ImplicitUnion : public ImplicitNode
 {
