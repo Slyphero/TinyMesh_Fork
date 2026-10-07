@@ -5,7 +5,8 @@
 \class Ray ray.h
 \brief A ray characterized by its origin an unit direction vector.
 
-This class should be used in ray-object intersection methods and for ray-tracing.
+This class should be used in ray-object intersection methods and for
+ray-tracing.
 */
 
 /*!
@@ -18,8 +19,7 @@ intersection point.
 \param p Intersection point.
 \param normal Surface outgoing normal.
 */
-Ray Ray::Reflect(const Vector& p, const Vector& normal)
-{
+Ray Ray::Reflect(const Vector &p, const Vector &normal) {
   return Ray(p, n - 2.0 * normal * (n * normal));
 }
 
@@ -29,8 +29,7 @@ Ray Ray::Reflect(const Vector& p, const Vector& normal)
 \param s Stream.
 \param ray The ray.
 */
-std::ostream& operator<<(std::ostream& s, const Ray& ray)
-{
+std::ostream &operator<<(std::ostream &s, const Ray &ray) {
   s << "Ray(" << ray.c << ',' << ray.n << ')';
   return s;
 }

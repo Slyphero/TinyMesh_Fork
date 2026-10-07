@@ -10,29 +10,30 @@
 /*!
 \brief Create a default camera.
 */
-Camera::Camera() :Camera(Vector::Null, Vector::Y, Vector::Z, 1.0, 1.0, 1.0, 1000.0)
-{
-}
+Camera::Camera()
+    : Camera(Vector::Null, Vector::Y, Vector::Z, 1.0, 1.0, 1.0, 1000.0) {}
 
 /*!
 \brief Create a camera given its location and look-at point.
 
 If no upward vector is provided, it is internally defined as z-axis.
 
-The view vector is defined as the vector between the eye point and the look at point.
-The right vector, which is always computed as a cross product between the view vector and the up vector.
+The view vector is defined as the vector between the eye point and the look at
+point. The right vector, which is always computed as a cross product between the
+view vector and the up vector.
 \param eye Eye point.
 \param at Look-at point.
 \param up Up vector.
 \param width, height Width and height of virtual screen.
 \param near, far Near and far planes.
 */
-Camera::Camera(const Vector& eye, const Vector& at, const Vector& up, double width, double height, double near, double far) :eye(eye), at(at), up(up)
-{
+Camera::Camera(const Vector &eye, const Vector &at, const Vector &up,
+               double width, double height, double near, double far)
+    : eye(eye), at(at), up(up) {
   Camera::width = width;
   Camera::height = height;
 
-  // Near and far planes 
+  // Near and far planes
   Camera::nearplane = near;
   Camera::farplane = far;
 
@@ -50,26 +51,25 @@ Camera::Camera(const Vector& eye, const Vector& at, const Vector& up, double wid
 \param field Field of view, should be in [0,Math::Pi/2.0].
 \param near, far Near and far planes.
 */
-Camera::Camera(const Vector& eye, const Vector& at, const Vector& up, double field, double near, double far) :Camera(eye, at, up, sin(field / 2.0), sin(field / 2.0), near, far)
-{
-}
+Camera::Camera(const Vector &eye, const Vector &at, const Vector &up,
+               double field, double near, double far)
+    : Camera(eye, at, up, sin(field / 2.0), sin(field / 2.0), near, far) {}
 
 /*!
 \brief Overloaded.
 \param s Stream.
 \param camera The camera.
 */
-std::ostream& operator<<(std::ostream& s, const Camera& camera)
-{
-  s << "Camera(" << camera.eye << ',' << camera.at << ',' << camera.width << ',' << camera.height << ',' << camera.up << ')' << std::endl;
+std::ostream &operator<<(std::ostream &s, const Camera &camera) {
+  s << "Camera(" << camera.eye << ',' << camera.at << ',' << camera.width << ','
+    << camera.height << ',' << camera.up << ')' << std::endl;
   return s;
 }
 
 /*!
 \brief Reset the camera so that the up vector should point to the sky.
 */
-void Camera::Vertical()
-{
+void Camera::Vertical() {
   up = Vector::Z;
 
   Vector z = at - eye;
@@ -88,17 +88,16 @@ void Camera::Vertical()
 The look-at point does not change.
 
 \param a Distance.
-\param t Boolean, set to true if look-at point should also be moved in the direction.
+\param t Boolean, set to true if look-at point should also be moved in the
+direction.
 */
-void Camera::BackForth(double a, bool t)
-{
+void Camera::BackForth(double a, bool t) {
   Vector z = at - eye;
   double length = Norm(z);
   z /= length;
 
   eye += a * z;
-  if (t == true)
-  {
+  if (t == true) {
     at += a * z;
   }
 }
@@ -107,12 +106,13 @@ void Camera::BackForth(double a, bool t)
 \brief Rotates the camera relatively to the look-at point.
 \param a Distance.
 */
-void Camera::LeftRightRound(double a)
-{
+void Camera::LeftRightRound(double a) {
   Vector e = eye - at;
   Vector left = up / e;
-  e = Vector(e[0] * cos(a) - e[1] * sin(a), e[0] * sin(a) + e[1] * cos(a), e[2]);
-  left = Vector(left[0] * cos(a) - left[1] * sin(a), left[0] * sin(a) + left[1] * cos(a), 0.0);
+  e = Vector(e[0] * cos(a) - e[1] * sin(a), e[0] * sin(a) + e[1] * cos(a),
+             e[2]);
+  left = Vector(left[0] * cos(a) - left[1] * sin(a),
+                left[0] * sin(a) + left[1] * cos(a), 0.0);
   up = Normalized(left / -e);
   eye = at + e;
 }
@@ -121,8 +121,7 @@ void Camera::LeftRightRound(double a)
 \brief Rotates the camera relatively to the look-at point.
 \param a Distance.
 */
-void Camera::UpDownRound(double a)
-{
+void Camera::UpDownRound(double a) {
   Vector z = at - eye;
   double length = Norm(z);
   z /= length;
@@ -141,8 +140,7 @@ void Camera::UpDownRound(double a)
 \brief Moves the camera left or right, preserving its height.
 \param a Distance.
 */
-void Camera::LeftRightHorizontal(double a)
-{
+void Camera::LeftRightHorizontal(double a) {
   Vector z = at - eye;
   z[2] = 0.0;
   double length = Norm(z);
@@ -160,8 +158,7 @@ void Camera::LeftRightHorizontal(double a)
 This function keeps the left vector horizontal.
 \param a Distance.
 */
-void Camera::UpDownVertical(double a)
-{
+void Camera::UpDownVertical(double a) {
   Vector z = at - eye;
   double length = Norm(z);
   z /= length;
@@ -177,9 +174,8 @@ void Camera::UpDownVertical(double a)
 
 Angle is in radian.
 */
-double Camera::GetAngleOfViewH() const
-{
-  // Horizontal angle of view in degrees 
+double Camera::GetAngleOfViewH() const {
+  // Horizontal angle of view in degrees
   return 2.0 * atan(cah * 25.4 * 0.5 / fl);
 }
 
@@ -190,9 +186,8 @@ Angle is in radian.
 
 \param w, h Width and height of the screen
 */
-double Camera::GetAngleOfViewV(double w, double h) const
-{
-  // Horizontal angle of view  
+double Camera::GetAngleOfViewV(double w, double h) const {
+  // Horizontal angle of view
   double avh = GetAngleOfViewH();
 
   double avv = 2.0 * atan(tan(avh / 2.0) * double(h) / double(w));
@@ -206,8 +201,7 @@ double Camera::GetAngleOfViewV(double w, double h) const
 \param px,py Pixel coordinates.
 \param w,h Size of the viewing window.
 */
-Ray Camera::PixelToRay(int px, int py, int w, int h) const
-{
+Ray Camera::PixelToRay(int px, int py, int w, int h) const {
   // Get coordinates
   Vector view = Normalized(At() - Eye());
   Vector horizontal = Normalized(view / Up());
@@ -215,8 +209,8 @@ Ray Camera::PixelToRay(int px, int py, int w, int h) const
 
   double length = 1.0;
 
-  // Convert to radians 
-  double rad = GetAngleOfViewV(w, h);  // fov
+  // Convert to radians
+  double rad = GetAngleOfViewV(w, h); // fov
 
   double vLength = tan(rad / 2.0) * length;
   double hLength = vLength * (double(w) / double(h));
@@ -224,15 +218,18 @@ Ray Camera::PixelToRay(int px, int py, int w, int h) const
   vertical *= vLength;
   horizontal *= hLength;
 
-  // Translate mouse coordinates so that the origin lies in the center of the view port
+  // Translate mouse coordinates so that the origin lies in the center of the
+  // view port
   double x = px - w / 2.0;
   double y = h / 2.0 - py;
 
-  // Scale mouse coordinates so that half the view port width and height becomes 1.0
+  // Scale mouse coordinates so that half the view port width and height
+  // becomes 1.0
   x /= w / 2.0;
   y /= h / 2.0;
 
-  // Direction is a linear combination to compute intersection of picking ray with view port plane
+  // Direction is a linear combination to compute intersection of picking ray
+  // with view port plane
   return Ray(eye, Normalized(view * length + horizontal * x + vertical * y));
 }
 
@@ -242,15 +239,15 @@ Ray Camera::PixelToRay(int px, int py, int w, int h) const
 \param u, v Coordinates in the screen
 \param w, h Size of the viewing window.
 */
-bool Camera::VectorToPixel(const Vector& p, double& u, double& v, int w, int h) const
-{
+bool Camera::VectorToPixel(const Vector &p, double &u, double &v, int w,
+                           int h) const {
   // Get coordinates
   const Vector view = Normalized(At() - Eye());
   const Vector horizontal = Normalized(view / Up());
   const Vector vertical = Normalized(horizontal / view);
 
-  // Convert to radians 
-  double rad = GetAngleOfViewV(w, h);  // fov
+  // Convert to radians
+  double rad = GetAngleOfViewV(w, h); // fov
 
   double vLength = tan(rad / 2);
   double hLength = vLength * (double(w) / double(h));
@@ -265,7 +262,8 @@ bool Camera::VectorToPixel(const Vector& p, double& u, double& v, int w, int h) 
   v /= z;
 
   // Check if point lies outside of frustum
-  if ((u < -1.0) || (u > 1.0) || (v < -1.0) || (v > 1.0) || (z < nearplane) || (z > farplane))
+  if ((u < -1.0) || (u > 1.0) || (v < -1.0) || (v > 1.0) || (z < nearplane) ||
+      (z > farplane))
     return false;
 
   return true;
@@ -275,8 +273,7 @@ bool Camera::VectorToPixel(const Vector& p, double& u, double& v, int w, int h) 
 \brief Sets the camera target vector.
 \param a Look-at point.
 */
-void Camera::SetAt(const Vector& a)
-{
+void Camera::SetAt(const Vector &a) {
   at = a;
   up = Vector::Z;
 }
@@ -285,33 +282,23 @@ void Camera::SetAt(const Vector& a)
 \brief Sets the camera eye point.
 \param p Eye point.
 */
-void Camera::SetEye(const Vector& p)
-{
-  eye = p;
-}
+void Camera::SetEye(const Vector &p) { eye = p; }
 
 /*!
 \brief Get the near distance.
 */
-double Camera::GetNear() const
-{
-  return nearplane;
-}
+double Camera::GetNear() const { return nearplane; }
 
 /*!
 \brief Get the far distance.
 */
-double Camera::GetFar() const
-{
-  return farplane;
-}
+double Camera::GetFar() const { return farplane; }
 
 /*!
 \brief Set the near and far planes.
 \param n, f Near and far planes distance to th eye.
 */
-void Camera::SetPlanes(double n, double f)
-{
+void Camera::SetPlanes(double n, double f) {
   nearplane = n;
   farplane = f;
 }

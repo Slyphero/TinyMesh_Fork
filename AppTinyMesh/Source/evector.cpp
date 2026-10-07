@@ -1,4 +1,4 @@
-// Vector  
+// Vector
 
 // Self include
 #include "mathematics.h"
@@ -20,8 +20,8 @@ Vector c=a/b; // Cross product
 \endcode
 computes the cross product of a and b.
 <P><I>How can I get access to the x, y and z components of a vector?</I>
-<BR>Use v[0], v[1] and v[2] to get access to the x, y and z components of a vector v respectively.
-<P><I>How do I compute the normal of a triangle?</I>
+<BR>Use v[0], v[1] and v[2] to get access to the x, y and z components of a
+vector v respectively. <P><I>How do I compute the normal of a triangle?</I>
 <BR>Let a,b,c the vertices of the triangle, simply compute the cross product
 \code
 Vector n=(a-b)/(a-c);  // Cross product
@@ -54,10 +54,7 @@ the components.
 This function does not check if the vector is null,
 which might resulting in errors.
 */
-void Normalize(Vector& u)
-{
-  u *= 1.0 / Norm(u);
-}
+void Normalize(Vector &u) { u *= 1.0 / Norm(u); }
 
 /*!
 \brief Returns a vector orthogonal to the argument vector.
@@ -71,24 +68,18 @@ the third coordinate is set to 0.
 The returned orthogonal vector lies in the plane orthogonal
 to the first vector.
 */
-Vector Vector::Orthogonal() const
-{
+Vector Vector::Orthogonal() const {
   Vector a = Abs(*this);
   int i = 0;
   int j = 1;
-  if (a[0] > a[1])
-  {
-    if (a[2] > a[1])
-    {
+  if (a[0] > a[1]) {
+    if (a[2] > a[1]) {
       j = 2;
     }
-  }
-  else
-  {
+  } else {
     i = 1;
     j = 2;
-    if (a[0] > a[2])
-    {
+    if (a[0] > a[2]) {
       j = 0;
     }
   }
@@ -103,8 +94,7 @@ Vector Vector::Orthogonal() const
 \param u Vector.
 \param s Stream.
 */
-std::ostream& operator<<(std::ostream& s, const Vector& u)
-{
+std::ostream &operator<<(std::ostream &s, const Vector &u) {
   s << "Vector(" << u.c[0] << ',' << u.c[1] << ',' << u.c[2] << ')';
   return s;
 }
@@ -113,10 +103,10 @@ std::ostream& operator<<(std::ostream& s, const Vector& u)
 \brief Given a vector, creates two vectors xand y that form an orthogonal basis.
 
 This algorithm pickes the minor axis in order to reduce numerical instability
-\param x, y Returned vectors such that (x,y,n) form an orthonormal basis (provided n is normalized).
+\param x, y Returned vectors such that (x,y,n) form an orthonormal basis
+(provided n is normalized).
 */
-void Vector::Orthonormal(Vector& x, Vector& y) const
-{
+void Vector::Orthonormal(Vector &x, Vector &y) const {
   x = Normalized(Orthogonal());
   y = Normalized(*this / x);
 }

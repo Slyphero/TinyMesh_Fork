@@ -8,10 +8,10 @@
 class ImplicitNode // Purement virtuelle
 {
 public:
-    virtual double Value(const Vector& p) const = 0;
-    virtual ~ImplicitNode() = default;
+  virtual double Value(const Vector &p) const = 0;
+  virtual ~ImplicitNode() = default;
+
 protected:
 };
-
 
 #endif // IMPLICITNODE_H
