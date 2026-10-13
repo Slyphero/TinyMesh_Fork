@@ -10,6 +10,7 @@ class Potential // Purement virtuelle
 {
   public:
     virtual double Value(const Vector &p) const = 0;
+    virtual ~Potential() = default;
 };
 
 class PotentialSphere : public Potential
@@ -20,7 +21,7 @@ class PotentialSphere : public Potential
     {
     }
 
-    double Value(const Vector &p) const;
+    double Value(const Vector &p) const override;
 
   private:
     double m_radius;
@@ -36,7 +37,7 @@ class PotentialCapsule : public Potential
     {
     }
 
-    double Value(const Vector &p) const;
+    double Value(const Vector &p) const override;
 
   private:
     double m_radius;
@@ -48,7 +49,7 @@ class PotentialCapsule : public Potential
 class ImplicitBlob : public ImplicitNode
 {
   public:
-    double Value(const Vector &p) const;
+    double Value(const Vector &p) const override;
     void AddPotential(std::shared_ptr<Potential> potential);
 
   private:

@@ -10,7 +10,7 @@ double ImplicitBlob::Value(const Vector &p) const
 {
     double total = 0.0;
 
-    for (std::shared_ptr<Potential> potential : m_potentials)
+    for (const std::shared_ptr<Potential> &potential : m_potentials)
     {
         total += potential->Value(p);
     }

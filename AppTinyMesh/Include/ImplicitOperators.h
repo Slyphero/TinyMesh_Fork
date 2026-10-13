@@ -12,7 +12,7 @@ class ImplicitUnion : public ImplicitNode
     {
     }
 
-    double Value(const Vector &p) const;
+    double Value(const Vector &p) const override;
 
   protected:
     std::shared_ptr<ImplicitNode> m_left;
@@ -26,7 +26,7 @@ class ImplicitIntersection : public ImplicitNode
         : m_left(left), m_right(right)
     {
     }
-    double Value(const Vector &p) const;
+    double Value(const Vector &p) const override;
 
   protected:
     std::shared_ptr<ImplicitNode> m_left;
@@ -40,7 +40,7 @@ class ImplicitDifference : public ImplicitNode
         : m_left(left), m_right(right)
     {
     }
-    double Value(const Vector &p) const;
+    double Value(const Vector &p) const override;
 
   protected:
     std::shared_ptr<ImplicitNode> m_left;

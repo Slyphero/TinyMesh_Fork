@@ -4,14 +4,6 @@
 #include "ImplicitNode.h"
 #include "mathematics.h"
 
-class SDF
-{
-  public:
-    virtual double Value(const Vector &) const = 0;
-
-  protected:
-};
-
 class SDFSphere : public ImplicitNode
 {
   public:
@@ -40,6 +32,22 @@ class SDFCapsule : public ImplicitNode
     double m_radius;
     Vector m_p1;
     Vector m_p2;
+};
+
+class SDFTorus : public ImplicitNode
+{
+  public:
+    SDFTorus(double ringSize, double thickness, const Vector &center)
+        : m_ringSize(ringSize), m_thickness(thickness), m_center(center)
+    {
+    }
+
+	double Value(const Vector &p) const override;
+
+  private:
+    double m_ringSize;
+    double m_thickness;
+    Vector m_center;
 };
 
 #endif // SDF_H

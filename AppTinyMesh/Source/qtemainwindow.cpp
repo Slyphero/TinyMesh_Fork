@@ -122,8 +122,20 @@ void MainWindow::TreeExample()
     std::shared_ptr<ImplicitNode> sdfSphere =
         std::make_shared<SDFSphere>(2.0, Vector(1.0, 0.0, 0.0));
 
-    std::shared_ptr<ImplicitNode> root = std::make_shared<ImplicitDifference>(blobs, sdfSphere);
+    std::shared_ptr<ImplicitNode> difference =
+        std::make_shared<ImplicitDifference>(blobs, sdfSphere);
 
+    std::shared_ptr<ImplicitNode> sdfCapsule =
+        std::make_shared<SDFCapsule>(1.0, Vector(1.0, 0.0, 2.0), Vector(2.0, 0.0, 2.0));
+
+    std::shared_ptr<ImplicitNode> union1 = std::make_shared<ImplicitUnion>(difference, sdfCapsule);
+
+    std::shared_ptr<ImplicitNode> torus =
+        std::make_shared<SDFTorus>(2.0, 0.5, Vector(1.0, 1.0, 1.0));
+
+    std::shared_ptr<ImplicitNode> union2 = std::make_shared<ImplicitUnion>(union1, torus);
+
+    std::shared_ptr<ImplicitNode> root = union2;
     tree.SetRoot(root);
 
     tree.Polygonize(128, implicitMesh, Box(10.0));
