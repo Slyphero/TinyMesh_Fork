@@ -19,8 +19,9 @@ intersection point.
 \param p Intersection point.
 \param normal Surface outgoing normal.
 */
-Ray Ray::Reflect(const Vector &p, const Vector &normal) {
-  return Ray(p, n - 2.0 * normal * (n * normal));
+Ray Ray::Reflect(const Vector &p, const Vector &normal)
+{
+    return Ray(p, n - 2.0 * normal * (n * normal));
 }
 
 /*!
@@ -29,7 +30,8 @@ Ray Ray::Reflect(const Vector &p, const Vector &normal) {
 \param s Stream.
 \param ray The ray.
 */
-std::ostream &operator<<(std::ostream &s, const Ray &ray) {
-  s << "Ray(" << ray.c << ',' << ray.n << ')';
-  return s;
+std::ostream &operator<<(std::ostream &s, const Ray &ray)
+{
+    s << "Ray(" << ray.c << ',' << ray.n << ')';
+    return s;
 }
