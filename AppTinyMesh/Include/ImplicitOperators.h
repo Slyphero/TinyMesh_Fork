@@ -4,47 +4,51 @@
 #include "ImplicitNode.h"
 #include "mathematics.h"
 
-class ImplicitUnion : public ImplicitNode
+class ImplicitBinaryOperator : public ImplicitNode
 {
   public:
-    ImplicitUnion(std::shared_ptr<ImplicitNode> left, std::shared_ptr<ImplicitNode> right)
+    ImplicitBinaryOperator(std::shared_ptr<ImplicitNode> left, std::shared_ptr<ImplicitNode> right)
         : m_left(left), m_right(right)
     {
     }
-
-    double Value(const Vector &p) const override;
 
   protected:
     std::shared_ptr<ImplicitNode> m_left;
     std::shared_ptr<ImplicitNode> m_right;
 };
 
-class ImplicitIntersection : public ImplicitNode
+class ImplicitUnion : public ImplicitBinaryOperator
 {
   public:
-    ImplicitIntersection(std::shared_ptr<ImplicitNode> left, std::shared_ptr<ImplicitNode> right)
-        : m_left(left), m_right(right)
+    using ImplicitBinaryOperator::ImplicitBinaryOperator;
+    double Value(const Vector &p) const override;
+};
+
+class ImplicitIntersection : public ImplicitBinaryOperator
+{
+  public:
+    using ImplicitBinaryOperator::ImplicitBinaryOperator;
+    double Value(const Vector &p) const override;
+};
+
+class ImplicitDifference : public ImplicitBinaryOperator
+{
+  public:
+    using ImplicitBinaryOperator::ImplicitBinaryOperator;
+    double Value(const Vector &p) const override;
+};
+
+class ImplicitSmoothUnion : public ImplicitBinaryOperator 
+{
+  public:
+    ImplicitSmoothUnion(std::shared_ptr<ImplicitNode> left, std::shared_ptr<ImplicitNode> right,
+                        double r)
+        : ImplicitBinaryOperator(std::move(left), std::move(right)), m_r(r)
     {
     }
     double Value(const Vector &p) const override;
 
   protected:
-    std::shared_ptr<ImplicitNode> m_left;
-    std::shared_ptr<ImplicitNode> m_right;
+    double m_r;
 };
-
-class ImplicitDifference : public ImplicitNode
-{
-  public:
-    ImplicitDifference(std::shared_ptr<ImplicitNode> left, std::shared_ptr<ImplicitNode> right)
-        : m_left(left), m_right(right)
-    {
-    }
-    double Value(const Vector &p) const override;
-
-  protected:
-    std::shared_ptr<ImplicitNode> m_left;
-    std::shared_ptr<ImplicitNode> m_right;
-};
-
 #endif // IMPLICITOPERATORS_H
