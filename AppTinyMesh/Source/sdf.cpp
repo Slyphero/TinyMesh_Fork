@@ -29,4 +29,12 @@ double SDFEllipsoid::Value(const Vector &p) const
 
 double SDFBox::Value(const Vector &p) const
 {
+    Vector q = p - m_center;
+    double dx = std::abs(q[0]) - m_x;
+    double dy = std::abs(q[1]) - m_y;
+    double dz = std::abs(q[2]) - m_z;
+
+    Vector outside(Math::Max(dx, 0.0), Math::Max(dy, 0.0), Math::Max(dz, 0.0));
+
+    return Norm(outside) + Math::Min(Math::Max(dx, Math::Max(dy, dz)), 0.0);
 }

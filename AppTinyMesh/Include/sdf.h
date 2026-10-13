@@ -70,15 +70,17 @@ class SDFEllipsoid : public ImplicitNode
 class SDFBox : public ImplicitNode
 {
   public:
-    SDFBox(double length, const Vector &center) : m_length(length), m_center(center)
+    SDFBox(double x, double y, double z, const Vector &center)
+        : m_x(x), m_y(y), m_z(z), m_center(center)
     {
     }
-
     double Value(const Vector &p) const override;
 
   private:
-    double m_length;
+    double m_x;
+    double m_y;
+    double m_z;
     Vector m_center;
-}
+};
 
 #endif // SDF_H
