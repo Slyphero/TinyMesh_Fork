@@ -120,7 +120,7 @@ void MainWindow::TreeExample()
 
     std::shared_ptr<ImplicitNode> blobs = std::make_shared<ImplicitUnion>(blob1, blob2);
     std::shared_ptr<ImplicitNode> sdfSphere =
-        std::make_shared<SDFSphere>(2.0, Vector(1.0, 0.0, 0.0));
+        std::make_shared<SDFSphere>(1.0, Vector(1.0, 0.0, 0.0));
 
     std::shared_ptr<ImplicitNode> difference =
         std::make_shared<ImplicitDifference>(blobs, sdfSphere);
@@ -136,7 +136,7 @@ void MainWindow::TreeExample()
     std::shared_ptr<ImplicitNode> union2 = std::make_shared<ImplicitUnion>(union1, torus);
 
     std::shared_ptr<ImplicitNode> sdfBox =
-        std::make_shared<SDFBox>(1.0, 2.0, 3.0, Vector(1.5, 1.5, 1.5));
+        std::make_shared<SDFBox>(1.0, 2.0, 1.0, Vector(2.0, 2.0, 2.0));
 
     std::shared_ptr<ImplicitNode> union3 = std::make_shared<ImplicitUnion>(union2, sdfBox);
 
