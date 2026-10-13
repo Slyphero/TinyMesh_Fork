@@ -42,12 +42,43 @@ class SDFTorus : public ImplicitNode
     {
     }
 
-	double Value(const Vector &p) const override;
+    double Value(const Vector &p) const override;
 
   private:
     double m_ringSize;
     double m_thickness;
     Vector m_center;
 };
+
+class SDFEllipsoid : public ImplicitNode
+{
+  public:
+    SDFEllipsoid(double xSize, double ySize, double zSize, const Vector &center)
+        : m_xSize(xSize), m_ySize(ySize), m_zSize(zSize), m_center(center)
+    {
+    }
+
+    double Value(const Vector &p) const override;
+
+  private:
+    double m_xSize;
+    double m_ySize;
+    double m_zSize;
+    Vector m_center;
+};
+
+class SDFBox : public ImplicitNode
+{
+  public:
+    SDFBox(double length, const Vector &center) : m_length(length), m_center(center)
+    {
+    }
+
+    double Value(const Vector &p) const override;
+
+  private:
+    double m_length;
+    Vector m_center;
+}
 
 #endif // SDF_H

@@ -22,3 +22,11 @@ double SDFTorus::Value(const Vector &p) const
     double dxy = sqrt(q[0] * q[0] + q[1] * q[1]) - m_ringSize;
     return sqrt(dxy * dxy + q[2] * q[2]) - m_thickness;
 }
+
+double SDFEllipsoid::Value(const Vector &p) const
+{
+}
+
+double SDFBox::Value(const Vector &p) const
+{
+}
