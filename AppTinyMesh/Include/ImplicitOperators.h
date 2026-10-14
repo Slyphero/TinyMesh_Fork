@@ -19,18 +19,21 @@ class ImplicitUnion : public ImplicitBinaryOperator {
  public:
   using ImplicitBinaryOperator::ImplicitBinaryOperator;
   double Value(const Vector& p) const override;
+  Color ColorAt(const Vector& p) const override;
 };
 
 class ImplicitIntersection : public ImplicitBinaryOperator {
  public:
   using ImplicitBinaryOperator::ImplicitBinaryOperator;
   double Value(const Vector& p) const override;
+  Color ColorAt(const Vector& p) const override;
 };
 
 class ImplicitDifference : public ImplicitBinaryOperator {
  public:
   using ImplicitBinaryOperator::ImplicitBinaryOperator;
   double Value(const Vector& p) const override;
+  Color ColorAt(const Vector& p) const override;
 };
 
 class ImplicitSmoothUnion : public ImplicitBinaryOperator {
@@ -39,6 +42,7 @@ class ImplicitSmoothUnion : public ImplicitBinaryOperator {
                       std::shared_ptr<ImplicitNode> right, double r)
       : ImplicitBinaryOperator(std::move(left), std::move(right)), m_r(r) {}
   double Value(const Vector& p) const override;
+  Color ColorAt(const Vector& p) const override;
 
  protected:
   double m_r;

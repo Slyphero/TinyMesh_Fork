@@ -15,6 +15,28 @@ double ImplicitBlob::Value(const Vector& p) const {
   return m_threshold - total;
 }
 
+Color ImplicitBlob::ColorAt(const Vector& p) const {
+  double sum = 0.0;
+  double r = 0.0;
+  double g = 0.0;
+  double b = 0.0;
+
+  for (const std::shared_ptr<Potential>& potential : m_potentials) {
+    double w = potential->Value(p);
+    const Color& c = potential->GetColor();
+
+    r += w * c[0];
+    g += w * c[1];
+    b += w * c[2];
+
+    sum += w;
+  }
+
+  if (sum < 1e-9) return Color(0.5, 0.5, 0.5);
+
+  return Color(r / sum, g / sum, b / sum);
+}
+
 // Potential Sphere
 bool PotentialSphere::Inside(const Vector& p) const {
   Vector radiusVec = Vector(m_radius, m_radius, m_radius);

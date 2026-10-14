@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "ImplicitNode.h"
+#include "color.h"
 
 class Potential  // Purement virtuelle
 {
@@ -12,6 +13,12 @@ class Potential  // Purement virtuelle
   virtual double Value(const Vector& p) const = 0;
   virtual bool Inside(const Vector& p) const = 0;
   virtual ~Potential() = default;
+
+  void SetColor(const Color& c) { m_color = c; }
+  const Color& GetColor() const { return m_color; }
+
+ protected:
+  Color m_color = Color(0.5, 0.5, 0.5);
 };
 
 class PotentialSphere : public Potential {
@@ -54,6 +61,8 @@ class ImplicitBlob : public ImplicitNode {
 
   double Value(const Vector& p) const override;
   void AddPotential(std::shared_ptr<Potential> potential);
+
+  Color ColorAt(const Vector& p) const override;
 
  private:
   double m_threshold;

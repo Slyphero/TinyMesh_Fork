@@ -4,12 +4,26 @@ double ImplicitUnion::Value(const Vector& p) const {
   return Math::Min(m_left->Value(p), m_right->Value(p));
 }
 
+Color ImplicitUnion::ColorAt(const Vector& p) const {
+  return m_left->Value(p) < m_right->Value(p) ? m_left->ColorAt(p)
+                                              : m_right->ColorAt(p);
+}
+
 double ImplicitIntersection::Value(const Vector& p) const {
   return Math::Max(m_left->Value(p), m_right->Value(p));
 }
 
+Color ImplicitIntersection::ColorAt(const Vector& p) const {
+  return m_left->Value(p) > m_right->Value(p) ? m_left->ColorAt(p)
+                                              : m_right->ColorAt(p);
+}
+
 double ImplicitDifference::Value(const Vector& p) const {
   return Math::Max(m_left->Value(p), -m_right->Value(p));
+}
+
+Color ImplicitDifference::ColorAt(const Vector& p) const {
+  return m_left->ColorAt(p);
 }
 
 double ImplicitSmoothUnion::Value(const Vector& p) const {
@@ -20,4 +34,9 @@ double ImplicitSmoothUnion::Value(const Vector& p) const {
   double offset = (1.0 / 6.0) * m_r * cubicH;
 
   return Math::Min(a, b) - offset;
+}
+
+Color ImplicitSmoothUnion::ColorAt(const Vector& p) const {
+  return m_left->Value(p) < m_right->Value(p) ? m_left->ColorAt(p)
+                                              : m_right->ColorAt(p);
 }
