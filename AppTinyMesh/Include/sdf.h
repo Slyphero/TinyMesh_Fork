@@ -7,7 +7,8 @@
 class SDFSphere : public ImplicitNode
 {
   public:
-    SDFSphere(double radius, const Vector &center) : m_radius(radius), m_center(center)
+    SDFSphere(double radius, const Vector &center)
+        : m_radius(radius), m_center(center)
     {
     }
 

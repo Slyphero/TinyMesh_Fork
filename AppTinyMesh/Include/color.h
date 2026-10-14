@@ -121,7 +121,8 @@ inline Color::Color(double r, double g, double b, double a)
 \param r, g, b Red, green and blue components.
 \param a Alpha channel, set to 255 (opaque) as default.
 */
-inline Color::Color(int r, int g, int b, int a) : Color(r / 255.0, g / 255.0, b / 255.0, a / 255.0)
+inline Color::Color(int r, int g, int b, int a)
+    : Color(r / 255.0, g / 255.0, b / 255.0, a / 255.0)
 {
 }
 

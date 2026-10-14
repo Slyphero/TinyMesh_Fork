@@ -7,7 +7,8 @@
 class ImplicitBinaryOperator : public ImplicitNode
 {
   public:
-    ImplicitBinaryOperator(std::shared_ptr<ImplicitNode> left, std::shared_ptr<ImplicitNode> right)
+    ImplicitBinaryOperator(std::shared_ptr<ImplicitNode> left,
+                           std::shared_ptr<ImplicitNode> right)
         : m_left(left), m_right(right)
     {
     }
@@ -38,11 +39,11 @@ class ImplicitDifference : public ImplicitBinaryOperator
     double Value(const Vector &p) const override;
 };
 
-class ImplicitSmoothUnion : public ImplicitBinaryOperator 
+class ImplicitSmoothUnion : public ImplicitBinaryOperator
 {
   public:
-    ImplicitSmoothUnion(std::shared_ptr<ImplicitNode> left, std::shared_ptr<ImplicitNode> right,
-                        double r)
+    ImplicitSmoothUnion(std::shared_ptr<ImplicitNode> left,
+                        std::shared_ptr<ImplicitNode> right, double r)
         : ImplicitBinaryOperator(std::move(left), std::move(right)), m_r(r)
     {
     }

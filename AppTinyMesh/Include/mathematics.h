@@ -154,8 +154,8 @@ class Vector
     void Orthonormal(Vector &, Vector &) const;
 
     friend Vector Lerp(const Vector &, const Vector &, double);
-    static Vector Bilinear(const Vector &, const Vector &, const Vector &, const Vector &, double,
-                           double);
+    static Vector Bilinear(const Vector &, const Vector &, const Vector &,
+                           const Vector &, double, double);
 
     // Scale
     Vector Scaled(const Vector &) const;
@@ -359,7 +359,8 @@ inline Vector operator*(double a, const Vector &v)
 //! Cross product.
 inline Vector operator/(const Vector &u, const Vector &v)
 {
-    return Vector(u.c[1] * v.c[2] - u.c[2] * v.c[1], u.c[2] * v.c[0] - u.c[0] * v.c[2],
+    return Vector(u.c[1] * v.c[2] - u.c[2] * v.c[1],
+                  u.c[2] * v.c[0] - u.c[0] * v.c[2],
                   u.c[0] * v.c[1] - u.c[1] * v.c[0]);
 }
 
@@ -425,7 +426,8 @@ inline Vector Normalized(const Vector &u)
 */
 inline Vector Abs(const Vector &u)
 {
-    return Vector(u[0] > 0.0 ? u[0] : -u[0], u[1] > 0.0 ? u[1] : -u[1], u[2] > 0.0 ? u[2] : -u[2]);
+    return Vector(u[0] > 0.0 ? u[0] : -u[0], u[1] > 0.0 ? u[1] : -u[1],
+                  u[2] > 0.0 ? u[2] : -u[2]);
 }
 
 /*!
@@ -434,7 +436,8 @@ of the two argument vectors.
 */
 inline Vector Vector::Min(const Vector &a, const Vector &b)
 {
-    return Vector(a[0] < b[0] ? a[0] : b[0], a[1] < b[1] ? a[1] : b[1], a[2] < b[2] ? a[2] : b[2]);
+    return Vector(a[0] < b[0] ? a[0] : b[0], a[1] < b[1] ? a[1] : b[1],
+                  a[2] < b[2] ? a[2] : b[2]);
 }
 
 /*!
@@ -443,7 +446,8 @@ of the two argument vectors.
 */
 inline Vector Vector::Max(const Vector &a, const Vector &b)
 {
-    return Vector(a[0] > b[0] ? a[0] : b[0], a[1] > b[1] ? a[1] : b[1], a[2] > b[2] ? a[2] : b[2]);
+    return Vector(a[0] > b[0] ? a[0] : b[0], a[1] > b[1] ? a[1] : b[1],
+                  a[2] > b[2] ? a[2] : b[2]);
 }
 
 /*!
@@ -466,8 +470,10 @@ The values are given in trigonometric order.
 
 \sa Math::Bilinear
 */
-inline Vector Vector::Bilinear(const Vector &a00, const Vector &a10, const Vector &a11,
-                               const Vector &a01, double u, double v)
+inline Vector Vector::Bilinear(const Vector &a00, const Vector &a10,
+                               const Vector &a11, const Vector &a01, double u,
+                               double v)
 {
-    return (1 - u) * (1 - v) * a00 + (1 - u) * (v)*a01 + (u) * (1 - v) * a10 + (u) * (v)*a11;
+    return (1 - u) * (1 - v) * a00 + (1 - u) * (v)*a01 + (u) * (1 - v) * a10 +
+           (u) * (v)*a11;
 }

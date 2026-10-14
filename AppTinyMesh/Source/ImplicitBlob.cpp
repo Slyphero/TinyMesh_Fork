@@ -19,8 +19,30 @@ double ImplicitBlob::Value(const Vector &p) const
 }
 
 // Potential Sphere
+bool PotentialSphere::Inside(const Vector &p) const
+{
+    Vector radiusVec = Vector(m_radius, m_radius, m_radius);
+    Vector a = m_center - radiusVec;
+    Vector b = m_center + radiusVec;
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (!(a[i] <= p[i] && p[i] <= b[i]))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 double PotentialSphere::Value(const Vector &p) const
 {
+    if (!(Inside(p)))
+    {
+        return 0;
+    }
+
     double squaredDistance = SquaredNorm(p - m_center);
     double ratio = (squaredDistance * m_inverseSquaredRadius);
 
@@ -33,8 +55,31 @@ double PotentialSphere::Value(const Vector &p) const
     return val * val;
 }
 
+// Potential Capsule
+bool PotentialCapsule::Inside(const Vector &p) const
+{
+    Vector radiusVec = Vector(m_radius, m_radius, m_radius);
+    Vector a = m_p1 - radiusVec;
+    Vector b = m_p2 + radiusVec;
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (!(a[i] <= p[i] && p[i] <= b[i]))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 double PotentialCapsule::Value(const Vector &p) const
 {
+    if (!(Inside(p)))
+    {
+        return 0.0;
+    }
+
     Vector p1p2 = m_p2 - m_p1;
     Vector p2p1 = m_p1 - m_p2;
     Vector p1p = p - m_p1;

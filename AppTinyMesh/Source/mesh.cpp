@@ -35,8 +35,9 @@ Mesh::Mesh(const std::vector<Vector> &vertices, const std::vector<int> &indices)
 \param normals Array of normals.
 \param va, na Array of vertex and normal indexes.
 */
-Mesh::Mesh(const std::vector<Vector> &vertices, const std::vector<Vector> &normals,
-           const std::vector<int> &va, const std::vector<int> &na)
+Mesh::Mesh(const std::vector<Vector> &vertices,
+           const std::vector<Vector> &normals, const std::vector<int> &va,
+           const std::vector<int> &na)
     : vertices(vertices), normals(normals), varray(va), narray(na)
 {
 }
@@ -77,9 +78,9 @@ void Mesh::SmoothNormals()
     // Accumulate normals
     for (int i = 0; i < varray.size(); i += 3)
     {
-        Vector tn =
-            Triangle(vertices[varray.at(i)], vertices[varray.at(i + 1)], vertices[varray.at(i + 2)])
-                .AreaNormal();
+        Vector tn = Triangle(vertices[varray.at(i)], vertices[varray.at(i + 1)],
+                             vertices[varray.at(i + 2)])
+                        .AreaNormal();
         normals[narray[i + 0]] += tn;
         normals[narray[i + 1]] += tn;
         normals[narray[i + 2]] += tn;
@@ -130,7 +131,8 @@ Creates two smooth triangles abc and acd.
 \param a, b, c, d  Index of the vertices.
 \param na, nb, nc, nd Index of the normal for all vertices.
 */
-void Mesh::AddSmoothQuadrangle(int a, int na, int b, int nb, int c, int nc, int d, int nd)
+void Mesh::AddSmoothQuadrangle(int a, int na, int b, int nb, int c, int nc,
+                               int d, int nd)
 {
     // First triangle
     AddSmoothTriangle(a, na, b, nb, c, nc);
@@ -253,11 +255,13 @@ void Mesh::Load(const QString &filename)
     QTextStream in(&data);
 
     // Set of regular expressions : Vertex, Normal, Triangle
-    QRegularExpression rexv("v\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+"
-                            ")\\s*([-|+|\\s]\\d*\\.\\d+)");
+    QRegularExpression rexv(
+        "v\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\.\\d+"
+        ")\\s*([-|+|\\s]\\d*\\.\\d+)");
     QRegularExpression rexn("vn\\s*([-|+|\\s]\\d*\\.\\d+)\\s*([-|+|\\s]\\d*\\."
                             "\\d+)\\s*([-|+|\\s]\\d*\\.\\d+)");
-    QRegularExpression rext("f\\s*(\\d*)/\\d*/(\\d*)\\s*(\\d*)/\\d*/(\\d*)\\s*(\\d*)/\\d*/(\\d*)");
+    QRegularExpression rext(
+        "f\\s*(\\d*)/\\d*/(\\d*)\\s*(\\d*)/\\d*/(\\d*)\\s*(\\d*)/\\d*/(\\d*)");
     while (!in.atEnd())
     {
         QString line = in.readLine();
@@ -266,13 +270,15 @@ void Mesh::Load(const QString &filename)
         QRegularExpressionMatch matchT = rext.match(line);
         if (match.hasMatch()) // rexv.indexIn(line, 0) > -1)
         {
-            Vector q = Vector(match.captured(1).toDouble(), match.captured(2).toDouble(),
+            Vector q = Vector(match.captured(1).toDouble(),
+                              match.captured(2).toDouble(),
                               match.captured(3).toDouble());
             vertices.push_back(q);
         }
         else if (matchN.hasMatch()) // rexn.indexIn(line, 0) > -1)
         {
-            Vector q = Vector(matchN.captured(1).toDouble(), matchN.captured(2).toDouble(),
+            Vector q = Vector(matchN.captured(1).toDouble(),
+                              matchN.captured(2).toDouble(),
                               matchN.captured(3).toDouble());
             normals.push_back(q);
         }
@@ -302,16 +308,16 @@ void Mesh::SaveObj(const QString &url, const QString &meshName) const
     QTextStream out(&data);
     out << "g " << meshName << Qt::endl;
     for (int i = 0; i < vertices.size(); i++)
-        out << "v " << vertices.at(i)[0] << " " << vertices.at(i)[1] << " " << vertices.at(i)[2]
-            << QString('\n');
+        out << "v " << vertices.at(i)[0] << " " << vertices.at(i)[1] << " "
+            << vertices.at(i)[2] << QString('\n');
     for (int i = 0; i < normals.size(); i++)
-        out << "vn " << normals.at(i)[0] << " " << normals.at(i)[1] << " " << normals.at(i)[2]
-            << QString('\n');
+        out << "vn " << normals.at(i)[0] << " " << normals.at(i)[1] << " "
+            << normals.at(i)[2] << QString('\n');
     for (int i = 0; i < varray.size(); i += 3)
     {
-        out << "f " << varray.at(i) + 1 << "//" << narray.at(i) + 1 << " " << varray.at(i + 1) + 1
-            << "//" << narray.at(i + 1) + 1 << " " << varray.at(i + 2) + 1 << "//"
-            << narray.at(i + 2) + 1 << " "
+        out << "f " << varray.at(i) + 1 << "//" << narray.at(i) + 1 << " "
+            << varray.at(i + 1) + 1 << "//" << narray.at(i + 1) + 1 << " "
+            << varray.at(i + 2) + 1 << "//" << narray.at(i + 2) + 1 << " "
             << "\n";
     }
     out.flush();

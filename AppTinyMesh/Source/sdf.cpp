@@ -25,6 +25,7 @@ double SDFTorus::Value(const Vector &p) const
 
 double SDFEllipsoid::Value(const Vector &p) const
 {
+    return 0.0;
 }
 
 double SDFBox::Value(const Vector &p) const

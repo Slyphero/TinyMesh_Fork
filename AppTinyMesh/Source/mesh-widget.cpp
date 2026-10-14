@@ -76,7 +76,8 @@ MeshWidget::MeshGL::MeshGL(const Mesh &mesh, const Vector &position) : MeshGL()
         glGenBuffers(1, &indexBuffer);
 
     glBindVertexArray(vao);
-    size_t fullSize = sizeof(float) * singleBufferSize + sizeof(float) * singleBufferSize;
+    size_t fullSize =
+        sizeof(float) * singleBufferSize + sizeof(float) * singleBufferSize;
     glBindBuffer(GL_ARRAY_BUFFER, fullBuffer);
     glBufferData(GL_ARRAY_BUFFER, fullSize, nullptr, GL_STATIC_DRAW);
 
@@ -98,7 +99,8 @@ MeshWidget::MeshGL::MeshGL(const Mesh &mesh, const Vector &position) : MeshGL()
     // Triangles
     glGenBuffers(1, &indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * nbVertex, indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * nbVertex, indices,
+                 GL_STATIC_DRAW);
 
     // Free data
     delete[] vertices;
@@ -192,7 +194,8 @@ MeshWidget::MeshGL::MeshGL(const MeshColor &mesh, const Vector &fr) : MeshGL()
     // Triangles
     glGenBuffers(1, &indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * nbVertex, indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * nbVertex, indices,
+                 GL_STATIC_DRAW);
 
     // Free data
     delete[] vertices;
@@ -288,8 +291,8 @@ void MeshWidget::initializeGL()
 
     // Find path of shader files (depends on IDE: QtCreator or Visual Studio...)
     QString shaderPath;
-    QVector<QString> possiblePaths = {"./MyTinyMesh/AppTinyMesh/Shaders/", "./AppTinyMesh/Shaders/",
-                                      "./Shaders/"};
+    QVector<QString> possiblePaths = {"./MyTinyMesh/AppTinyMesh/Shaders/",
+                                      "./AppTinyMesh/Shaders/", "./Shaders/"};
     for (auto &path : possiblePaths)
     {
         std::ifstream in((path + usedMeshShader).toLocal8Bit().data());
@@ -327,10 +330,11 @@ void MeshWidget::resizeGL(int w, int h)
 
     if (perspectiveProjection)
         gluPerspective(Math::RadianToDegree(camera.GetAngleOfViewV(w, h)),
-                       (GLdouble)w / (GLdouble)h, camera.GetNear(), camera.GetFar());
+                       (GLdouble)w / (GLdouble)h, camera.GetNear(),
+                       camera.GetFar());
     else
-        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize, cameraOrthoSize,
-                camera.GetNear(), camera.GetFar());
+        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize,
+                cameraOrthoSize, camera.GetNear(), camera.GetFar());
 }
 
 /*!
@@ -359,21 +363,23 @@ void MeshWidget::paintGL()
         else
             MoveAt = false;
     }
-    gluLookAt(camera.Eye()[0], camera.Eye()[1], camera.Eye()[2], camera.At()[0], camera.At()[1],
-              camera.At()[2], camera.Up()[0], camera.Up()[1], camera.Up()[2]);
+    gluLookAt(camera.Eye()[0], camera.Eye()[1], camera.Eye()[2], camera.At()[0],
+              camera.At()[1], camera.At()[2], camera.Up()[0], camera.Up()[1],
+              camera.Up()[2]);
 
     // Sky
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glUseProgram(skyboxShader);
     glBindVertexArray(skyboxVAO);
-    glUniform3f(glGetUniformLocation(skyboxShader, "CamPos"), camera.Eye()[0], camera.Eye()[1],
-                camera.Eye()[2]);
-    glUniform3f(glGetUniformLocation(skyboxShader, "CamAt"), camera.At()[0], camera.At()[1],
-                camera.At()[2]);
-    glUniform3f(glGetUniformLocation(skyboxShader, "CamUp"), camera.Up()[0], camera.Up()[1],
-                camera.Up()[2]);
-    glUniform2f(glGetUniformLocation(skyboxShader, "iResolution"), width(), height());
+    glUniform3f(glGetUniformLocation(skyboxShader, "CamPos"), camera.Eye()[0],
+                camera.Eye()[1], camera.Eye()[2]);
+    glUniform3f(glGetUniformLocation(skyboxShader, "CamAt"), camera.At()[0],
+                camera.At()[1], camera.At()[2]);
+    glUniform3f(glGetUniformLocation(skyboxShader, "CamUp"), camera.Up()[0],
+                camera.Up()[1], camera.Up()[2]);
+    glUniform2f(glGetUniformLocation(skyboxShader, "iResolution"), width(),
+                height());
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     // Draw meshes
@@ -385,12 +391,15 @@ void MeshWidget::paintGL()
     glUseProgram(mainShaderProgram);
 
     // Shared uniforms
-    glUniformMatrix4fv(glGetUniformLocation(mainShaderProgram, "ModelViewMatrix"), 1, 0,
-                       ModelViewMatrix);
-    glUniformMatrix4fv(glGetUniformLocation(mainShaderProgram, "ProjectionMatrix"), 1, 0,
-                       ProjectionMatrix);
+    glUniformMatrix4fv(
+        glGetUniformLocation(mainShaderProgram, "ModelViewMatrix"), 1, 0,
+        ModelViewMatrix);
+    glUniformMatrix4fv(
+        glGetUniformLocation(mainShaderProgram, "ProjectionMatrix"), 1, 0,
+        ProjectionMatrix);
     Vector view = Normalized(camera.View());
-    glUniform3f(glGetUniformLocation(mainShaderProgram, "viewDir"), view[0], view[1], view[2]);
+    glUniform3f(glGetUniformLocation(mainShaderProgram, "viewDir"), view[0],
+                view[1], view[2]);
 
     for (MeshIterator i = objects.begin(); i != objects.end(); i++)
     {
@@ -398,18 +407,21 @@ void MeshWidget::paintGL()
             continue;
 
         // Uniforms
-        glUniform2f(glGetUniformLocation(mainShaderProgram, "WIN_SCALE"), width() / 2.0f,
-                    height() / 2.0f);
-        glUniformMatrix4fv(glGetUniformLocation(mainShaderProgram, "TRSMatrix"), 1, GL_FALSE,
-                           &i.value()->TRSMatrix[0]);
+        glUniform2f(glGetUniformLocation(mainShaderProgram, "WIN_SCALE"),
+                    width() / 2.0f, height() / 2.0f);
+        glUniformMatrix4fv(glGetUniformLocation(mainShaderProgram, "TRSMatrix"),
+                           1, GL_FALSE, &i.value()->TRSMatrix[0]);
         glUniform1i(glGetUniformLocation(mainShaderProgram, "useWireframe"),
                     i.value()->useWireframe ? 1 : 0);
-        glUniform1i(glGetUniformLocation(mainShaderProgram, "material"), (int)i.value()->material);
-        glUniform1i(glGetUniformLocation(mainShaderProgram, "shading"), (int)i.value()->shading);
+        glUniform1i(glGetUniformLocation(mainShaderProgram, "material"),
+                    (int)i.value()->material);
+        glUniform1i(glGetUniformLocation(mainShaderProgram, "shading"),
+                    (int)i.value()->shading);
 
         // Draw
         glBindVertexArray(i.value()->vao);
-        glDrawElements(GL_TRIANGLES, (GLsizei)i.value()->triangleCount, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, (GLsizei)i.value()->triangleCount,
+                       GL_UNSIGNED_INT, nullptr);
     }
     profiler.EndGPU();
 
@@ -429,7 +441,8 @@ void MeshWidget::paintGL()
 \param mesh new mesh
 \param frame mesh frame, identity by default.
 */
-void MeshWidget::AddMesh(const QString &name, const Mesh &mesh, const Vector &frame)
+void MeshWidget::AddMesh(const QString &name, const Mesh &mesh,
+                         const Vector &frame)
 {
     makeCurrent();
     objects.insert(name, new MeshGL(mesh, frame));
@@ -440,7 +453,8 @@ void MeshWidget::AddMesh(const QString &name, const Mesh &mesh, const Vector &fr
 \param mesh new colored mesh
 \param frame mesh frame, identity by default.
 */
-void MeshWidget::AddMesh(const QString &name, const MeshColor &mesh, const Vector &frame)
+void MeshWidget::AddMesh(const QString &name, const MeshColor &mesh,
+                         const Vector &frame)
 {
     makeCurrent();
     objects.insert(name, new MeshGL(mesh, frame));
@@ -530,11 +544,13 @@ void MeshWidget::SetCamera(const Camera &c)
     glLoadIdentity();
 
     if (perspectiveProjection)
-        gluPerspective(Math::RadianToDegree(camera.GetAngleOfViewV(width(), height())),
-                       (GLdouble)width() / (GLdouble)height(), camera.GetNear(), camera.GetFar());
+        gluPerspective(
+            Math::RadianToDegree(camera.GetAngleOfViewV(width(), height())),
+            (GLdouble)width() / (GLdouble)height(), camera.GetNear(),
+            camera.GetFar());
     else
-        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize, cameraOrthoSize,
-                camera.GetNear(), camera.GetFar());
+        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize,
+                cameraOrthoSize, camera.GetNear(), camera.GetFar());
 }
 
 /*!
@@ -550,11 +566,13 @@ void MeshWidget::SetNearAndFarPlane(double n, double f)
     glLoadIdentity();
 
     if (perspectiveProjection)
-        gluPerspective(Math::RadianToDegree(camera.GetAngleOfViewV(width(), height())),
-                       (GLdouble)width() / (GLdouble)height(), camera.GetNear(), camera.GetFar());
+        gluPerspective(
+            Math::RadianToDegree(camera.GetAngleOfViewV(width(), height())),
+            (GLdouble)width() / (GLdouble)height(), camera.GetNear(),
+            camera.GetFar());
     else
-        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize, cameraOrthoSize,
-                camera.GetNear(), camera.GetFar());
+        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize,
+                cameraOrthoSize, camera.GetNear(), camera.GetFar());
 }
 
 /*!
@@ -569,11 +587,13 @@ void MeshWidget::SetCameraMode(bool perspective)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     if (perspectiveProjection)
-        gluPerspective(Math::RadianToDegree(camera.GetAngleOfViewV(width(), height())),
-                       (GLdouble)width() / (GLdouble)height(), camera.GetNear(), camera.GetFar());
+        gluPerspective(
+            Math::RadianToDegree(camera.GetAngleOfViewV(width(), height())),
+            (GLdouble)width() / (GLdouble)height(), camera.GetNear(),
+            camera.GetFar());
     else
-        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize, cameraOrthoSize,
-                camera.GetNear(), camera.GetFar());
+        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize,
+                cameraOrthoSize, camera.GetNear(), camera.GetFar());
 }
 
 /*!
@@ -712,11 +732,14 @@ void MeshWidget::RenderStats()
     painter.setPen(penLineWhite);
     painter.drawText(10 + 5, bY + 10 + 5, "Statistics");
     painter.setFont(f2);
-    painter.drawText(10 + 5, bY + 10 + 20, "CPU FPS:\t" + QString::number(profiler.framePerSecond));
+    painter.drawText(10 + 5, bY + 10 + 20,
+                     "CPU FPS:\t" + QString::number(profiler.framePerSecond));
     painter.drawText(10 + 5, bY + 10 + 35,
-                     "CPU Frame:\t" + QString::number(profiler.msPerFrame) + "ms");
-    painter.drawText(10 + 5, bY + 10 + 50,
-                     "GPU:\t" + QString::number(profiler.elapsedTimeGPU / 1000000.0) + "ms");
+                     "CPU Frame:\t" + QString::number(profiler.msPerFrame) +
+                         "ms");
+    painter.drawText(
+        10 + 5, bY + 10 + 50,
+        "GPU:\t" + QString::number(profiler.elapsedTimeGPU / 1000000.0) + "ms");
 
     painter.end();
 
@@ -731,7 +754,8 @@ Methods differs between Qt6 & Qt5, hence the generic function.
 \param x0 returned x coordinate
 \param y0 returned y coordinate
 */
-void MeshWidget::_InternalGetMouseGlobalPosition(QMouseEvent *e, int &x, int &y) const
+void MeshWidget::_InternalGetMouseGlobalPosition(QMouseEvent *e, int &x,
+                                                 int &y) const
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     x = e->pos().x();
@@ -849,8 +873,8 @@ void MeshWidget::wheelEvent(QWheelEvent *e)
         makeCurrent();
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize, cameraOrthoSize,
-                camera.GetNear(), camera.GetFar());
+        glOrtho(-cameraOrthoSize, cameraOrthoSize, -cameraOrthoSize,
+                cameraOrthoSize, camera.GetNear(), camera.GetFar());
     }
 
     update();

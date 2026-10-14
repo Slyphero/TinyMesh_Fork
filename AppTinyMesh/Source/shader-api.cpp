@@ -24,13 +24,14 @@ static std::string read(const char *filename)
 }
 
 // insere les definitions apres la ligne contenant #version
-static std::string prepare_source(std::string file, const std::string &definitions)
+static std::string prepare_source(std::string file,
+                                  const std::string &definitions)
 {
     if (file.empty())
         return std::string();
 
-    // un peu de gymnastique, #version doit rester sur la premiere ligne, meme si
-    // on insere des #define dans le source
+    // un peu de gymnastique, #version doit rester sur la premiere ligne, meme
+    // si on insere des #define dans le source
     std::string source;
 
     // recupere la ligne #version
@@ -46,7 +47,8 @@ static std::string prepare_source(std::string file, const std::string &definitio
 
             if (file.find("#version") != std::string::npos)
             {
-                std::cout << "[error] found several #version directives. failed.\n";
+                std::cout
+                    << "[error] found several #version directives. failed.\n";
                 return std::string();
             }
         }
@@ -98,20 +100,21 @@ static const char *shader_string(const GLenum type)
     }
 }
 
-static const char *shader_keys[] = {"VERTEX_SHADER",       "FRAGMENT_SHADER",    "GEOMETRY_SHADER",
-                                    "TESSELATION_CONTROL", "EVALUATION_CONTROL", "COMPUTE_SHADER"};
+static const char *shader_keys[] = {"VERTEX_SHADER",      "FRAGMENT_SHADER",
+                                    "GEOMETRY_SHADER",    "TESSELATION_CONTROL",
+                                    "EVALUATION_CONTROL", "COMPUTE_SHADER"};
 const int shader_keys_max = 6;
 
-static GLenum shader_types[] = {GL_VERTEX_SHADER,       GL_FRAGMENT_SHADER,
-                                GL_GEOMETRY_SHADER,
+static GLenum shader_types[] = {
+    GL_VERTEX_SHADER,       GL_FRAGMENT_SHADER,        GL_GEOMETRY_SHADER,
 #ifdef GL_VERSION_4_0
-                                GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER,
+    GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER,
 #else
   0,
   0,
 #endif
 #ifdef GL_VERSION_4_3
-                                GL_COMPUTE_SHADER
+    GL_COMPUTE_SHADER
 #else
   0
 #endif
@@ -135,7 +138,8 @@ static GLuint compile_shader(const GLuint program, const GLenum shader_type,
     return (status == GL_TRUE) ? shader : 0;
 }
 
-int reload_program(GLuint program, const char *filename, const char *definitions)
+int reload_program(GLuint program, const char *filename,
+                   const char *definitions)
 {
     if (program == 0)
         return -1;
@@ -165,12 +169,15 @@ int reload_program(GLuint program, const char *filename, const char *definitions
         if (common_source.find(shader_keys[i]) != std::string::npos)
         {
             // cree et compile les shaders detectes dans le source
-            std::string source = prepare_source(
-                common_source,
-                std::string(definitions).append("#define ").append(shader_keys[i]).append("\n"));
+            std::string source =
+                prepare_source(common_source, std::string(definitions)
+                                                  .append("#define ")
+                                                  .append(shader_keys[i])
+                                                  .append("\n"));
             GLuint shader = compile_shader(program, shader_types[i], source);
             if (shader == 0)
-                std::cout << "[error] compiling " << shader_string(shader_types[i]) << " "
+                std::cout << "[error] compiling "
+                          << shader_string(shader_types[i]) << " "
                           << definitions;
         }
     }
@@ -187,8 +194,8 @@ int reload_program(GLuint program, const char *filename, const char *definitions
         return -1;
     }
 
-    // pour etre coherent avec les autres fonctions de creation, active l'objet gl
-    // qui vient d'etre cree.
+    // pour etre coherent avec les autres fonctions de creation, active l'objet
+    // gl qui vient d'etre cree.
     glUseProgram(program);
     return 0;
 }
@@ -227,8 +234,8 @@ int release_program(const GLuint program)
 
 // formatage des erreurs de compilation des shaders
 
-static void print_line(std::string &errors, const char *source, const int begin_id,
-                       const int line_id)
+static void print_line(std::string &errors, const char *source,
+                       const int begin_id, const int line_id)
 {
     int line = 0;
     char last = '\n';
@@ -262,7 +269,8 @@ static void print_line(std::string &errors, const char *source, const int begin_
     }
 }
 
-static int print_errors(std::string &errors, const char *log, const char *source)
+static int print_errors(std::string &errors, const char *log,
+                        const char *source)
 {
     std::cout << "[error log] " << log << std::endl;
 
@@ -274,8 +282,8 @@ static int print_errors(std::string &errors, const char *log, const char *source
         // recupere la ligne assiciee a l'erreur
         int string_id = 0, line_id = 0, position = 0;
 #ifdef _WIN32
-        if (sscanf_s(&log[i], "%d ( %d ) : %n", &string_id, &line_id, &position) ==
-                2 // nvidia syntax
+        if (sscanf_s(&log[i], "%d ( %d ) : %n", &string_id, &line_id,
+                     &position) == 2 // nvidia syntax
             || sscanf_s(&log[i], "%d : %d (%*d) : %n", &string_id, &line_id,
                         &position) == 2 // mesa syntax
             || sscanf_s(&log[i], "ERROR : %d : %d : %n", &string_id, &line_id,
@@ -283,7 +291,8 @@ static int print_errors(std::string &errors, const char *log, const char *source
             || sscanf_s(&log[i], "WARNING : %d : %d : %n", &string_id, &line_id,
                         &position) == 2) // ati syntax
 #elif __linux__
-        if (sscanf(&log[i], "%d ( %d ) : %n", &string_id, &line_id, &position) == 2 // nvidia syntax
+        if (sscanf(&log[i], "%d ( %d ) : %n", &string_id, &line_id,
+                   &position) == 2 // nvidia syntax
             || sscanf(&log[i], "%d : %d (%*d) : %n", &string_id, &line_id,
                       &position) == 2 // mesa syntax
             || sscanf(&log[i], "ERROR : %d : %d : %n", &string_id, &line_id,
@@ -357,18 +366,23 @@ int program_format_errors(const GLuint program, std::string &errors)
             // recupere les erreurs de compilation des shaders
             glGetShaderiv(shaders[i], GL_INFO_LOG_LENGTH, &value);
             std::vector<char> log(value + 1, 0);
-            glGetShaderInfoLog(shaders[i], (GLsizei)log.size(), nullptr, &log.front());
+            glGetShaderInfoLog(shaders[i], (GLsizei)log.size(), nullptr,
+                               &log.front());
 
             // recupere le source
             glGetShaderiv(shaders[i], GL_SHADER_SOURCE_LENGTH, &value);
             std::vector<char> source(value + 1, 0);
-            glGetShaderSource(shaders[i], (GLsizei)source.size(), nullptr, &source.front());
+            glGetShaderSource(shaders[i], (GLsizei)source.size(), nullptr,
+                              &source.front());
 
             glGetShaderiv(shaders[i], GL_SHADER_TYPE, &value);
-            errors.append("[error] compiling ").append(shader_string(value)).append("...\n");
+            errors.append("[error] compiling ")
+                .append(shader_string(value))
+                .append("...\n");
 
             // formatte les erreurs
-            int last_error = print_errors(errors, &log.front(), &source.front());
+            int last_error =
+                print_errors(errors, &log.front(), &source.front());
             first_error = std::min(first_error, last_error);
         }
     }
@@ -379,9 +393,11 @@ int program_format_errors(const GLuint program, std::string &errors)
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &value);
 
         std::vector<char> log(value + 1, 0);
-        glGetProgramInfoLog(program, (GLsizei)log.size(), nullptr, &log.front());
+        glGetProgramInfoLog(program, (GLsizei)log.size(), nullptr,
+                            &log.front());
 
-        errors.append("[error] linking program...\n").append(log.begin(), log.end());
+        errors.append("[error] linking program...\n")
+            .append(log.begin(), log.end());
     }
 
     return first_error;

@@ -59,8 +59,8 @@ class Box
     friend std::ostream &operator<<(std::ostream &, const Box &);
 
   public:
-    static const double epsilon;   //!< Internal \htmlonly\epsilon;\endhtmlonly for
-                                   //!< ray intersection tests.
+    static const double epsilon; //!< Internal \htmlonly\epsilon;\endhtmlonly
+                                 //!< for ray intersection tests.
     static const Box Null;         //!< Empty box.
     static const int edge[24];     //!< Edge vertices.
     static const Vector normal[6]; //!< Face normals.
@@ -127,7 +127,8 @@ Vector vertex=Vector((k&1)?b[0]:a[0],(k&2)?b[1]:a[1],(k&4)?b[2]:a[2]);
 */
 inline Vector Box::Vertex(int k) const
 {
-    return Vector((k & 1) ? b[0] : a[0], (k & 2) ? b[1] : a[1], (k & 4) ? b[2] : a[2]);
+    return Vector((k & 1) ? b[0] : a[0], (k & 2) ? b[1] : a[1],
+                  (k & 4) ? b[2] : a[2]);
 }
 
 //! Compute the volume of a box.

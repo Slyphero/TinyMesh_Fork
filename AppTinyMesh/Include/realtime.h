@@ -64,9 +64,10 @@ class RenderingProfiler
     inline void Update()
     {
         nbframes++;
-        auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
-                                std::chrono::high_resolution_clock::now() - start)
-                                .count();
+        auto microseconds =
+            std::chrono::duration_cast<std::chrono::microseconds>(
+                std::chrono::high_resolution_clock::now() - start)
+                .count();
         const double seconds = static_cast<double>(microseconds) / 1000000.0;
         if (seconds >= 1.0)
         {
@@ -98,10 +99,11 @@ class MeshWidget : public QOpenGLWidget
     class MeshGL
     {
       public:
-        bool enabled;        //!< Render flag. Mesh is not rendered if enabled equals false.
-        GLuint vao;          //!< Mesh VAO.
-        GLuint fullBuffer;   //!< Mesh buffer. Contains 3D normals, 2D vertices and
-                             //!< heights.
+        bool enabled; //!< Render flag. Mesh is not rendered if enabled equals
+                      //!< false.
+        GLuint vao;   //!< Mesh VAO.
+        GLuint fullBuffer; //!< Mesh buffer. Contains 3D normals, 2D vertices
+                           //!< and heights.
         GLuint indexBuffer;  //!< Mesh index buffer.
         int triangleCount;   //!< Triangle count to draw.
         float TRSMatrix[16]; //!< Translation-Rotation-Scale Matrix.
@@ -149,7 +151,8 @@ class MeshWidget : public QOpenGLWidget
     ~MeshWidget();
 
     void AddMesh(const QString &, const Mesh &, const Vector & = Vector::Null);
-    void AddMesh(const QString &, const MeshColor &, const Vector & = Vector::Null);
+    void AddMesh(const QString &, const MeshColor &,
+                 const Vector & = Vector::Null);
     void DeleteMesh(const QString &);
     void ClearAll();
 
@@ -173,7 +176,8 @@ class MeshWidget : public QOpenGLWidget
     void SetShadingGlobal(MeshShading);
 
   private:
-    void _InternalGetMouseGlobalPosition(QMouseEvent *e, int &x0, int &y0) const;
+    void _InternalGetMouseGlobalPosition(QMouseEvent *e, int &x0,
+                                         int &y0) const;
 
   protected:
     virtual void initializeGL();

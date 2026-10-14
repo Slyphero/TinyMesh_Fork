@@ -22,11 +22,14 @@ Vector b=box[1]; // Opposite vertex
 \endcode
 */
 
-const double Box::epsilon = 1.0e-5; //!< Epsilon value used to check intersections and some round
-                                    //!< off errors.
-const Box Box::Null(0.0);           //!< Null box, equivalent to: \code Box(Vector(0.0)); \endcode
+const double Box::epsilon =
+    1.0e-5; //!< Epsilon value used to check intersections and some round
+            //!< off errors.
+const Box Box::Null(
+    0.0); //!< Null box, equivalent to: \code Box(Vector(0.0)); \endcode
 
-const int Box::edge[24] = {0, 1, 2, 3, 4, 5, 6, 7, 0, 2, 1, 3, 4, 6, 5, 7, 0, 4, 1, 5, 2, 6, 3, 7};
+const int Box::edge[24] = {0, 1, 2, 3, 4, 5, 6, 7, 0, 2, 1, 3,
+                           4, 6, 5, 7, 0, 4, 1, 5, 2, 6, 3, 7};
 
 const Vector Box::normal[6] = {Vector(-1.0, 0.0, 0.0), Vector(0.0, -1.0, 0.0),
                                Vector(0.0, 0.0, -1.0), Vector(1.0, 0.0, 0.0),
@@ -118,8 +121,10 @@ Box::Box(const Box &x, const Box &y)
 Box Box::Sub(int n) const
 {
     Vector c = Center();
-    return Box(Vector((n & 1) ? c[0] : a[0], (n & 2) ? c[1] : a[1], (n & 4) ? c[2] : a[2]),
-               Vector((n & 1) ? b[0] : c[0], (n & 2) ? b[1] : c[1], (n & 4) ? b[2] : c[2]));
+    return Box(Vector((n & 1) ? c[0] : a[0], (n & 2) ? c[1] : a[1],
+                      (n & 4) ? c[2] : a[2]),
+               Vector((n & 1) ? b[0] : c[0], (n & 2) ? b[1] : c[1],
+                      (n & 4) ? b[2] : c[2]));
 }
 
 /*!

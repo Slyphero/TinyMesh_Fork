@@ -15,7 +15,8 @@ class BlobSphere : public Blob
 {
   public:
     BlobSphere(double radius, const Vector &center)
-        : m_radius(radius), m_center(center), m_inverseSquaredRadius(1.0 / (m_radius * m_radius))
+        : m_radius(radius), m_center(center),
+          m_inverseSquaredRadius(1.0 / (m_radius * m_radius))
     {
     }
 
@@ -31,7 +32,8 @@ class BlobCapsule : public Blob
 {
   public:
     BlobCapsule(double radius, const Vector &p1, const Vector &p2)
-        : m_radius(radius), m_p1(p1), m_p2(p2), m_inverseSquaredRadius(1.0 / (radius * radius))
+        : m_radius(radius), m_p1(p1), m_p2(p2),
+          m_inverseSquaredRadius(1.0 / (radius * radius))
     {
     }
 

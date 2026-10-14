@@ -29,13 +29,17 @@ void MainWindow::CreateActions()
 {
     // Buttons
     connect(uiw->boxMesh, SIGNAL(clicked()), this, SLOT(BoxMeshExample()));
-    connect(uiw->sphereImplicit, SIGNAL(clicked()), this, SLOT(SphereImplicitExample()));
+    connect(uiw->sphereImplicit, SIGNAL(clicked()), this,
+            SLOT(SphereImplicitExample()));
     connect(uiw->blob, SIGNAL(clicked()), this, SLOT(BlobSphereExample()));
     connect(uiw->tree, SIGNAL(clicked()), this, SLOT(TreeExample()));
-    connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
+    connect(uiw->resetcameraButton, SIGNAL(clicked()), this,
+            SLOT(ResetCamera()));
     connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
-    connect(uiw->radioShadingButton_1, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
-    connect(uiw->radioShadingButton_2, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
+    connect(uiw->radioShadingButton_1, SIGNAL(clicked()), this,
+            SLOT(UpdateMaterial()));
+    connect(uiw->radioShadingButton_2, SIGNAL(clicked()), this,
+            SLOT(UpdateMaterial()));
 
     // Widget edition
     connect(meshWidget, SIGNAL(_signalEditSceneLeft(const Ray &)), this,
@@ -86,7 +90,8 @@ void MainWindow::BlobSphereExample()
     AnalyticBlob implicit;
 
     for (int i = 0; i < 4; i++)
-        implicit.AddBlob(std::make_shared<BlobSphere>(1.0, Vector(1.0 * i, 0.0, 0.0)));
+        implicit.AddBlob(
+            std::make_shared<BlobSphere>(1.0, Vector(1.0 * i, 0.0, 0.0)));
 
     Mesh implicitMesh;
     implicit.Polygonize(31, implicitMesh, Box(4.0));
@@ -110,35 +115,41 @@ void MainWindow::TreeExample()
 
     for (int i = 0; i < 4; i++)
     {
-        blob1->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(1.2 * i, 0.0, 0.0)));
+        blob1->AddPotential(
+            std::make_shared<PotentialSphere>(1.0, Vector(1.2 * i, 0.0, 0.0)));
     }
     for (int i = 0; i < 5; i++)
     {
-        blob2->AddPotential(std::make_shared<PotentialCapsule>(1.0, Vector(1.0, 3.0 + 1.2 * i, 0.0),
-                                                               Vector(2.0, 3.0 + 1.2 * i, 0.0)));
+        blob2->AddPotential(std::make_shared<PotentialCapsule>(
+            1.0, Vector(1.0, 3.0 + 1.2 * i, 0.0),
+            Vector(2.0, 3.0 + 1.2 * i, 0.0)));
     }
 
-    std::shared_ptr<ImplicitNode> blobs = std::make_shared<ImplicitUnion>(blob1, blob2);
+    std::shared_ptr<ImplicitNode> blobs =
+        std::make_shared<ImplicitUnion>(blob1, blob2);
     std::shared_ptr<ImplicitNode> sdfSphere =
         std::make_shared<SDFSphere>(1.0, Vector(1.0, 0.0, 0.0));
 
     std::shared_ptr<ImplicitNode> difference =
         std::make_shared<ImplicitDifference>(blobs, sdfSphere);
 
-    std::shared_ptr<ImplicitNode> sdfCapsule =
-        std::make_shared<SDFCapsule>(1.0, Vector(1.0, 0.0, 2.0), Vector(2.0, 0.0, 2.0));
+    std::shared_ptr<ImplicitNode> sdfCapsule = std::make_shared<SDFCapsule>(
+        1.0, Vector(1.0, 0.0, 2.0), Vector(2.0, 0.0, 2.0));
 
-    std::shared_ptr<ImplicitNode> union1 = std::make_shared<ImplicitUnion>(difference, sdfCapsule);
+    std::shared_ptr<ImplicitNode> union1 =
+        std::make_shared<ImplicitUnion>(difference, sdfCapsule);
 
     std::shared_ptr<ImplicitNode> torus =
-        std::make_shared<SDFTorus>(2.0, 0.5, Vector(1.0, 1.0, 1.0));
+        std::make_shared<SDFTorus>(2.0, 0.75, Vector(1.0, 1.0, 1.0));
 
-    std::shared_ptr<ImplicitNode> union2 = std::make_shared<ImplicitUnion>(union1, torus);
+    std::shared_ptr<ImplicitNode> union2 =
+        std::make_shared<ImplicitUnion>(union1, torus);
 
     std::shared_ptr<ImplicitNode> sdfBox =
         std::make_shared<SDFBox>(1.0, 2.0, 1.0, Vector(2.0, 2.0, 2.0));
 
-    std::shared_ptr<ImplicitNode> union3 = std::make_shared<ImplicitUnion>(union2, sdfBox);
+    std::shared_ptr<ImplicitNode> union3 =
+        std::make_shared<ImplicitUnion>(union2, sdfBox);
 
     std::shared_ptr<ImplicitNode> sdfSphere2 =
         std::make_shared<SDFSphere>(1., Vector(4.5, 3.5, 3.0));
@@ -149,7 +160,7 @@ void MainWindow::TreeExample()
     std::shared_ptr<ImplicitNode> root = union4;
     tree.SetRoot(root);
 
-    tree.Polygonize(128, implicitMesh, Box(10.0));
+    tree.Polygonize(150, implicitMesh, Box(10.0));
 
     std::vector<Color> cols;
     cols.resize(implicitMesh.Vertexes());

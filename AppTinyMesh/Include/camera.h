@@ -25,10 +25,11 @@ class Camera
     double farplane;  //!< Far plane.
   public:
     Camera();
-    explicit Camera(const Vector &, const Vector &, const Vector & = Vector::Z, double = 1.0,
-                    double = 1.0, double = 1.0, double = 100000.0);
-    explicit Camera(const Vector &, const Vector &, const Vector &, double, double = 1.0,
+    explicit Camera(const Vector &, const Vector &, const Vector & = Vector::Z,
+                    double = 1.0, double = 1.0, double = 1.0,
                     double = 100000.0);
+    explicit Camera(const Vector &, const Vector &, const Vector &, double,
+                    double = 1.0, double = 100000.0);
 
     Vector At() const;
     Vector Eye() const;

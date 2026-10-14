@@ -10,7 +10,8 @@
 /*!
 \brief Create a default camera.
 */
-Camera::Camera() : Camera(Vector::Null, Vector::Y, Vector::Z, 1.0, 1.0, 1.0, 1000.0)
+Camera::Camera()
+    : Camera(Vector::Null, Vector::Y, Vector::Z, 1.0, 1.0, 1.0, 1000.0)
 {
 }
 
@@ -28,8 +29,8 @@ view vector and the up vector.
 \param width, height Width and height of virtual screen.
 \param near, far Near and far planes.
 */
-Camera::Camera(const Vector &eye, const Vector &at, const Vector &up, double width, double height,
-               double near, double far)
+Camera::Camera(const Vector &eye, const Vector &at, const Vector &up,
+               double width, double height, double near, double far)
     : eye(eye), at(at), up(up)
 {
     Camera::width = width;
@@ -53,8 +54,8 @@ Camera::Camera(const Vector &eye, const Vector &at, const Vector &up, double wid
 \param field Field of view, should be in [0,Math::Pi/2.0].
 \param near, far Near and far planes.
 */
-Camera::Camera(const Vector &eye, const Vector &at, const Vector &up, double field, double near,
-               double far)
+Camera::Camera(const Vector &eye, const Vector &at, const Vector &up,
+               double field, double near, double far)
     : Camera(eye, at, up, sin(field / 2.0), sin(field / 2.0), near, far)
 {
 }
@@ -66,8 +67,8 @@ Camera::Camera(const Vector &eye, const Vector &at, const Vector &up, double fie
 */
 std::ostream &operator<<(std::ostream &s, const Camera &camera)
 {
-    s << "Camera(" << camera.eye << ',' << camera.at << ',' << camera.width << ',' << camera.height
-      << ',' << camera.up << ')' << std::endl;
+    s << "Camera(" << camera.eye << ',' << camera.at << ',' << camera.width
+      << ',' << camera.height << ',' << camera.up << ')' << std::endl;
     return s;
 }
 
@@ -118,8 +119,10 @@ void Camera::LeftRightRound(double a)
 {
     Vector e = eye - at;
     Vector left = up / e;
-    e = Vector(e[0] * cos(a) - e[1] * sin(a), e[0] * sin(a) + e[1] * cos(a), e[2]);
-    left = Vector(left[0] * cos(a) - left[1] * sin(a), left[0] * sin(a) + left[1] * cos(a), 0.0);
+    e = Vector(e[0] * cos(a) - e[1] * sin(a), e[0] * sin(a) + e[1] * cos(a),
+               e[2]);
+    left = Vector(left[0] * cos(a) - left[1] * sin(a),
+                  left[0] * sin(a) + left[1] * cos(a), 0.0);
     up = Normalized(left / -e);
     eye = at + e;
 }
@@ -252,7 +255,8 @@ Ray Camera::PixelToRay(int px, int py, int w, int h) const
 \param u, v Coordinates in the screen
 \param w, h Size of the viewing window.
 */
-bool Camera::VectorToPixel(const Vector &p, double &u, double &v, int w, int h) const
+bool Camera::VectorToPixel(const Vector &p, double &u, double &v, int w,
+                           int h) const
 {
     // Get coordinates
     const Vector view = Normalized(At() - Eye());
@@ -275,7 +279,8 @@ bool Camera::VectorToPixel(const Vector &p, double &u, double &v, int w, int h) 
     v /= z;
 
     // Check if point lies outside of frustum
-    if ((u < -1.0) || (u > 1.0) || (v < -1.0) || (v > 1.0) || (z < nearplane) || (z > farplane))
+    if ((u < -1.0) || (u > 1.0) || (v < -1.0) || (v > 1.0) || (z < nearplane) ||
+        (z > farplane))
         return false;
 
     return true;

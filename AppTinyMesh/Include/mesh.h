@@ -183,7 +183,8 @@ inline int Mesh::NormalIndex(int t, int i) const
 */
 inline Triangle Mesh::GetTriangle(int i) const
 {
-    return Triangle(vertices.at(varray.at(i * 3 + 0)), vertices.at(varray.at(i * 3 + 1)),
+    return Triangle(vertices.at(varray.at(i * 3 + 0)),
+                    vertices.at(varray.at(i * 3 + 1)),
                     vertices.at(varray.at(i * 3 + 2)));
 }
 

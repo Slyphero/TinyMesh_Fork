@@ -148,7 +148,8 @@ double Triangle::CircumscribedRadius() const
     double u = Norm(p[0] - p[1]);
     double v = Norm(p[1] - p[2]);
     double w = Norm(p[2] - p[0]);
-    return u * v * w / sqrt((u + v + w) * (-u + v + w) * (u - v + w) * (u + v - w));
+    return u * v * w /
+           sqrt((u + v + w) * (-u + v + w) * (u - v + w) * (u + v - w));
 }
 
 /*!

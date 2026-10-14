@@ -13,7 +13,8 @@ class MeshColor : public Mesh
   public:
     explicit MeshColor();
     explicit MeshColor(const Mesh &);
-    explicit MeshColor(const Mesh &, const std::vector<Color> &, const std::vector<int> &);
+    explicit MeshColor(const Mesh &, const std::vector<Color> &,
+                       const std::vector<int> &);
     ~MeshColor();
 
     Color GetColor(int) const;
