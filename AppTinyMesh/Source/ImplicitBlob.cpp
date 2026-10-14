@@ -1,111 +1,91 @@
 #include "ImplicitBlob.h"
 
 // Implicit Blob
-void ImplicitBlob::AddPotential(std::shared_ptr<Potential> potential)
-{
-    m_potentials.emplace_back(potential);
+void ImplicitBlob::AddPotential(std::shared_ptr<Potential> potential) {
+  m_potentials.emplace_back(potential);
 }
 
-double ImplicitBlob::Value(const Vector &p) const
-{
-    double total = 0.0;
+double ImplicitBlob::Value(const Vector& p) const {
+  double total = 0.0;
 
-    for (const std::shared_ptr<Potential> &potential : m_potentials)
-    {
-        total += potential->Value(p);
-    }
+  for (const std::shared_ptr<Potential>& potential : m_potentials) {
+    total += potential->Value(p);
+  }
 
-    return m_threshold - total;
+  return m_threshold - total;
 }
 
 // Potential Sphere
-bool PotentialSphere::Inside(const Vector &p) const
-{
-    Vector radiusVec = Vector(m_radius, m_radius, m_radius);
-    Vector a = m_center - radiusVec;
-    Vector b = m_center + radiusVec;
+bool PotentialSphere::Inside(const Vector& p) const {
+  Vector radiusVec = Vector(m_radius, m_radius, m_radius);
+  Vector a = m_center - radiusVec;
+  Vector b = m_center + radiusVec;
 
-    for (int i = 0; i < 3; i++)
-    {
-        if (!(a[i] <= p[i] && p[i] <= b[i]))
-        {
-            return false;
-        }
+  for (int i = 0; i < 3; i++) {
+    if (!(a[i] <= p[i] && p[i] <= b[i])) {
+      return false;
     }
+  }
 
-    return true;
+  return true;
 }
 
-double PotentialSphere::Value(const Vector &p) const
-{
-    if (!(Inside(p)))
-    {
-        return 0;
-    }
+double PotentialSphere::Value(const Vector& p) const {
+  if (!(Inside(p))) {
+    return 0;
+  }
 
-    double squaredDistance = SquaredNorm(p - m_center);
-    double ratio = (squaredDistance * m_inverseSquaredRadius);
+  double squaredDistance = SquaredNorm(p - m_center);
+  double ratio = (squaredDistance * m_inverseSquaredRadius);
 
-    if (ratio > 1.0)
-    {
-        return 0;
-    }
+  if (ratio > 1.0) {
+    return 0;
+  }
 
-    double val = 1 - ratio;
-    return val * val;
+  double val = 1 - ratio;
+  return val * val;
 }
 
 // Potential Capsule
-bool PotentialCapsule::Inside(const Vector &p) const
-{
-    Vector radiusVec = Vector(m_radius, m_radius, m_radius);
-    Vector a = m_p1 - radiusVec;
-    Vector b = m_p2 + radiusVec;
+bool PotentialCapsule::Inside(const Vector& p) const {
+  Vector radiusVec = Vector(m_radius, m_radius, m_radius);
+  Vector a = m_p1 - radiusVec;
+  Vector b = m_p2 + radiusVec;
 
-    for (int i = 0; i < 3; i++)
-    {
-        if (!(a[i] <= p[i] && p[i] <= b[i]))
-        {
-            return false;
-        }
+  for (int i = 0; i < 3; i++) {
+    if (!(a[i] <= p[i] && p[i] <= b[i])) {
+      return false;
     }
+  }
 
-    return true;
+  return true;
 }
 
-double PotentialCapsule::Value(const Vector &p) const
-{
-    if (!(Inside(p)))
-    {
-        return 0.0;
-    }
+double PotentialCapsule::Value(const Vector& p) const {
+  if (!(Inside(p))) {
+    return 0.0;
+  }
 
-    Vector p1p2 = m_p2 - m_p1;
-    Vector p2p1 = m_p1 - m_p2;
-    Vector p1p = p - m_p1;
-    Vector p2p = p - m_p2;
+  Vector p1p2 = m_p2 - m_p1;
+  Vector p2p1 = m_p1 - m_p2;
+  Vector p1p = p - m_p1;
+  Vector p2p = p - m_p2;
 
-    double squaredDistance;
-    double ratio;
+  double squaredDistance;
+  double ratio;
 
-    if (p1p2 * p1p < 0.0)
-    {
-        squaredDistance = SquaredNorm(p - m_p1);
-    }
-    else if (p2p1 * p2p < 0.0)
-    {
-        squaredDistance = SquaredNorm(p - m_p2);
-    }
-    else
-    {
-        double dp = p1p2 * p1p;
-        double len = p1p2 * p1p2;
-        squaredDistance = (p1p * p1p) - (dp * dp) / (len + 0.000001);
-    }
+  if (p1p2 * p1p < 0.0) {
+    squaredDistance = SquaredNorm(p - m_p1);
+  } else if (p2p1 * p2p < 0.0) {
+    squaredDistance = SquaredNorm(p - m_p2);
+  } else {
+    double dp = p1p2 * p1p;
+    double len = p1p2 * p1p2;
+    squaredDistance = (p1p * p1p) - (dp * dp) / (len + 0.000001);
+  }
 
-    ratio = (squaredDistance * m_inverseSquaredRadius);
-    if (ratio > 1.0)
-        return 0;
+  ratio = (squaredDistance * m_inverseSquaredRadius);
+  if (ratio > 1.0) return 0;
 
-    return (1 - ratio) * (1 - ratio);
+  return (1 - ratio) * (1 - ratio);
 }

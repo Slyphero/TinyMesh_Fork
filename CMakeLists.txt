@@ -43,7 +43,6 @@ set(SRC_DIR AppTinyMesh/Source)
 set(SRC_FILES
     ${SRC_DIR}/ImplicitBlob.cpp
     ${SRC_DIR}/ImplicitOperators.cpp
-    ${SRC_DIR}/blob.cpp
     ${SRC_DIR}/box.cpp
     ${SRC_DIR}/evector.cpp
     ${SRC_DIR}/implicits.cpp
@@ -67,7 +66,6 @@ set(HEADER_FILES
     ${INC_DIR}/ImplicitBlob.h
     ${INC_DIR}/ImplicitNode.h
     ${INC_DIR}/ImplicitOperators.h
-    ${INC_DIR}/blob.h
     ${INC_DIR}/box.h
     ${INC_DIR}/camera.h
     ${INC_DIR}/color.h

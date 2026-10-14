@@ -5,43 +5,33 @@ const double AnalyticScalarField::Epsilon = 1e-6;
 /*!
 \brief Constructor.
 */
-AnalyticScalarField::AnalyticScalarField()
-{
-}
+AnalyticScalarField::AnalyticScalarField() {}
 
 /*!
 \brief Compute the value of the field.
 \param p Point.
 */
-double AnalyticScalarField::Value(const Vector &p) const
-{
-    return Norm(p) - 1.0;
+double AnalyticScalarField::Value(const Vector& p) const {
+  return Norm(p) - 1.0;
 }
 
-double AnalyticBlob::Value(const Vector &p) const
-{
-    double total = 0.0;
+double AnalyticBlob::Value(const Vector& p) const {
+  double total = 0.0;
 
-    for (std::shared_ptr<Blob> blob : blobsTable)
-        total += blob->Value(p);
+  for (std::shared_ptr<Blob> blob : blobsTable) total += blob->Value(p);
 
-    return total - 0.2;
+  return total - 0.2;
 }
 
-void AnalyticBlob::AddBlob(const std::shared_ptr<Blob> blob)
-{
-    blobsTable.push_back(blob);
+void AnalyticBlob::AddBlob(const std::shared_ptr<Blob> blob) {
+  blobsTable.push_back(blob);
 }
 
-void AnalyticTree::SetRoot(std::shared_ptr<ImplicitNode> root)
-{
-    m_root = root;
+void AnalyticTree::SetRoot(std::shared_ptr<ImplicitNode> root) {
+  m_root = root;
 }
 
-double AnalyticTree::Value(const Vector &p) const
-{
-    return m_root->Value(p);
-}
+double AnalyticTree::Value(const Vector& p) const { return m_root->Value(p); }
 
 /*!
 \brief Compute the polygonal mesh approximating the implicit surface.
@@ -51,235 +41,208 @@ double AnalyticTree::Value(const Vector &p) const
 \param g Returned geometry.
 \param epsilon Epsilon value for computing vertices on straddling edges.
 */
-void AnalyticScalarField::Polygonize(int n, Mesh &g, const Box &box, const double &epsilon) const
-{
-    std::vector<Vector> vertex;
-    std::vector<Vector> normal;
+void AnalyticScalarField::Polygonize(int n, Mesh& g, const Box& box,
+                                     const double& epsilon) const {
+  std::vector<Vector> vertex;
+  std::vector<Vector> normal;
 
-    std::vector<int> triangle;
+  std::vector<int> triangle;
 
-    vertex.reserve(20000);
-    normal.reserve(20000);
-    triangle.reserve(20000);
+  vertex.reserve(20000);
+  normal.reserve(20000);
+  triangle.reserve(20000);
 
-    int nv = 0;
-    const int nx = n;
-    const int ny = n;
-    const int nz = n;
+  int nv = 0;
+  const int nx = n;
+  const int ny = n;
+  const int nz = n;
 
-    Box clipped = box;
+  Box clipped = box;
 
-    // Clamped integer values
-    const int nax = 0;
-    const int nbx = nx;
-    const int nay = 0;
-    const int nby = ny;
-    const int naz = 0;
-    const int nbz = nz;
+  // Clamped integer values
+  const int nax = 0;
+  const int nbx = nx;
+  const int nay = 0;
+  const int nby = ny;
+  const int naz = 0;
+  const int nbz = nz;
 
-    const int size = nx * ny;
+  const int size = nx * ny;
 
-    // Intensities
-    double *a = new double[size];
-    double *b = new double[size];
+  // Intensities
+  double* a = new double[size];
+  double* b = new double[size];
 
-    // Vertex
-    Vector *u = new Vector[size];
-    Vector *v = new Vector[size];
+  // Vertex
+  Vector* u = new Vector[size];
+  Vector* v = new Vector[size];
 
-    // Edges
-    int *eax = new int[size];
-    int *eay = new int[size];
-    int *ebx = new int[size];
-    int *eby = new int[size];
-    int *ez = new int[size];
+  // Edges
+  int* eax = new int[size];
+  int* eay = new int[size];
+  int* ebx = new int[size];
+  int* eby = new int[size];
+  int* ez = new int[size];
 
-    // Diagonal of a cell
-    Vector d = clipped.Diagonal() / (n - 1);
+  // Diagonal of a cell
+  Vector d = clipped.Diagonal() / (n - 1);
 
-    double za = 0.0;
+  double za = 0.0;
 
-    // Compute field inside lower Oxy plane
-    for (int i = nax; i < nbx; i++)
-    {
-        for (int j = nay; j < nby; j++)
-        {
-            u[i * ny + j] = clipped[0] + Vector(i * d[0], j * d[1], za);
-            a[i * ny + j] = Value(u[i * ny + j]);
-        }
+  // Compute field inside lower Oxy plane
+  for (int i = nax; i < nbx; i++) {
+    for (int j = nay; j < nby; j++) {
+      u[i * ny + j] = clipped[0] + Vector(i * d[0], j * d[1], za);
+      a[i * ny + j] = Value(u[i * ny + j]);
+    }
+  }
+
+  // Compute straddling edges inside lower Oxy plane
+  for (int i = nax; i < nbx - 1; i++) {
+    for (int j = nay; j < nby; j++) {
+      // We need a xor b, which can be implemented a == !b
+      if (!((a[i * ny + j] < 0.0) == !(a[(i + 1) * ny + j] >= 0.0))) {
+        vertex.push_back(Dichotomy(u[i * ny + j], u[(i + 1) * ny + j],
+                                   a[i * ny + j], a[(i + 1) * ny + j], d[0],
+                                   epsilon));
+        normal.push_back(Normal(vertex.back()));
+        eax[i * ny + j] = nv;
+        nv++;
+      }
+    }
+  }
+  for (int i = nax; i < nbx; i++) {
+    for (int j = nay; j < nby - 1; j++) {
+      if (!((a[i * ny + j] < 0.0) == !(a[i * ny + (j + 1)] >= 0.0))) {
+        vertex.push_back(Dichotomy(u[i * ny + j], u[i * ny + (j + 1)],
+                                   a[i * ny + j], a[i * ny + (j + 1)], d[1],
+                                   epsilon));
+        normal.push_back(Normal(vertex.back()));
+        eay[i * ny + j] = nv;
+        nv++;
+      }
+    }
+  }
+
+  // Array for edge vertices
+  int e[12];
+
+  // For all layers
+  for (int k = naz; k < nbz; k++) {
+    double zb = za + d[2];
+    for (int i = nax; i < nbx; i++) {
+      for (int j = nay; j < nby; j++) {
+        v[i * ny + j] = clipped[0] + Vector(i * d[0], j * d[1], zb);
+        b[i * ny + j] = Value(v[i * ny + j]);
+      }
     }
 
     // Compute straddling edges inside lower Oxy plane
-    for (int i = nax; i < nbx - 1; i++)
-    {
-        for (int j = nay; j < nby; j++)
-        {
-            // We need a xor b, which can be implemented a == !b
-            if (!((a[i * ny + j] < 0.0) == !(a[(i + 1) * ny + j] >= 0.0)))
-            {
-                vertex.push_back(Dichotomy(u[i * ny + j], u[(i + 1) * ny + j], a[i * ny + j],
-                                           a[(i + 1) * ny + j], d[0], epsilon));
-                normal.push_back(Normal(vertex.back()));
-                eax[i * ny + j] = nv;
-                nv++;
-            }
+    for (int i = nax; i < nbx - 1; i++) {
+      for (int j = nay; j < nby; j++) {
+        //   if (((b[i*ny + j] < 0.0) && (b[(i + 1)*ny + j] >= 0.0)) || ((b[i*ny
+        //   + j] >= 0.0) && (b[(i + 1)*ny + j] < 0.0)))
+        if (!((b[i * ny + j] < 0.0) == !(b[(i + 1) * ny + j] >= 0.0))) {
+          vertex.push_back(Dichotomy(v[i * ny + j], v[(i + 1) * ny + j],
+                                     b[i * ny + j], b[(i + 1) * ny + j], d[0],
+                                     epsilon));
+          normal.push_back(Normal(vertex.back()));
+          ebx[i * ny + j] = nv;
+          nv++;
         }
-    }
-    for (int i = nax; i < nbx; i++)
-    {
-        for (int j = nay; j < nby - 1; j++)
-        {
-            if (!((a[i * ny + j] < 0.0) == !(a[i * ny + (j + 1)] >= 0.0)))
-            {
-                vertex.push_back(Dichotomy(u[i * ny + j], u[i * ny + (j + 1)], a[i * ny + j],
-                                           a[i * ny + (j + 1)], d[1], epsilon));
-                normal.push_back(Normal(vertex.back()));
-                eay[i * ny + j] = nv;
-                nv++;
-            }
-        }
+      }
     }
 
-    // Array for edge vertices
-    int e[12];
-
-    // For all layers
-    for (int k = naz; k < nbz; k++)
-    {
-        double zb = za + d[2];
-        for (int i = nax; i < nbx; i++)
-        {
-            for (int j = nay; j < nby; j++)
-            {
-                v[i * ny + j] = clipped[0] + Vector(i * d[0], j * d[1], zb);
-                b[i * ny + j] = Value(v[i * ny + j]);
-            }
+    for (int i = nax; i < nbx; i++) {
+      for (int j = nay; j < nby - 1; j++) {
+        // if (((b[i*ny + j] < 0.0) && (b[i*ny + (j + 1)] >= 0.0)) || ((b[i*ny +
+        // j] >= 0.0) && (b[i*ny + (j + 1)] < 0.0)))
+        if (!((b[i * ny + j] < 0.0) == !(b[i * ny + (j + 1)] >= 0.0))) {
+          vertex.push_back(Dichotomy(v[i * ny + j], v[i * ny + (j + 1)],
+                                     b[i * ny + j], b[i * ny + (j + 1)], d[1],
+                                     epsilon));
+          normal.push_back(Normal(vertex.back()));
+          eby[i * ny + j] = nv;
+          nv++;
         }
-
-        // Compute straddling edges inside lower Oxy plane
-        for (int i = nax; i < nbx - 1; i++)
-        {
-            for (int j = nay; j < nby; j++)
-            {
-                //   if (((b[i*ny + j] < 0.0) && (b[(i + 1)*ny + j] >= 0.0)) || ((b[i*ny
-                //   + j] >= 0.0) && (b[(i + 1)*ny + j] < 0.0)))
-                if (!((b[i * ny + j] < 0.0) == !(b[(i + 1) * ny + j] >= 0.0)))
-                {
-                    vertex.push_back(Dichotomy(v[i * ny + j], v[(i + 1) * ny + j], b[i * ny + j],
-                                               b[(i + 1) * ny + j], d[0], epsilon));
-                    normal.push_back(Normal(vertex.back()));
-                    ebx[i * ny + j] = nv;
-                    nv++;
-                }
-            }
-        }
-
-        for (int i = nax; i < nbx; i++)
-        {
-            for (int j = nay; j < nby - 1; j++)
-            {
-                // if (((b[i*ny + j] < 0.0) && (b[i*ny + (j + 1)] >= 0.0)) || ((b[i*ny +
-                // j] >= 0.0) && (b[i*ny + (j + 1)] < 0.0)))
-                if (!((b[i * ny + j] < 0.0) == !(b[i * ny + (j + 1)] >= 0.0)))
-                {
-                    vertex.push_back(Dichotomy(v[i * ny + j], v[i * ny + (j + 1)], b[i * ny + j],
-                                               b[i * ny + (j + 1)], d[1], epsilon));
-                    normal.push_back(Normal(vertex.back()));
-                    eby[i * ny + j] = nv;
-                    nv++;
-                }
-            }
-        }
-
-        // Create vertical straddling edges
-        for (int i = nax; i < nbx; i++)
-        {
-            for (int j = nay; j < nby; j++)
-            {
-                // if ((a[i*ny + j] < 0.0) && (b[i*ny + j] >= 0.0) || (a[i*ny + j] >=
-                // 0.0) && (b[i*ny + j] < 0.0))
-                if (!((a[i * ny + j] < 0.0) == !(b[i * ny + j] >= 0.0)))
-                {
-                    vertex.push_back(Dichotomy(u[i * ny + j], v[i * ny + j], a[i * ny + j],
-                                               b[i * ny + j], d[2], epsilon));
-                    normal.push_back(Normal(vertex.back()));
-                    ez[i * ny + j] = nv;
-                    nv++;
-                }
-            }
-        }
-
-        // Create mesh
-        for (int i = nax; i < nbx - 1; i++)
-        {
-            for (int j = nay; j < nby - 1; j++)
-            {
-                int cubeindex = 0;
-                if (a[i * ny + j] < 0.0)
-                    cubeindex |= 1;
-                if (a[(i + 1) * ny + j] < 0.0)
-                    cubeindex |= 2;
-                if (a[i * ny + j + 1] < 0.0)
-                    cubeindex |= 4;
-                if (a[(i + 1) * ny + j + 1] < 0.0)
-                    cubeindex |= 8;
-                if (b[i * ny + j] < 0.0)
-                    cubeindex |= 16;
-                if (b[(i + 1) * ny + j] < 0.0)
-                    cubeindex |= 32;
-                if (b[i * ny + j + 1] < 0.0)
-                    cubeindex |= 64;
-                if (b[(i + 1) * ny + j + 1] < 0.0)
-                    cubeindex |= 128;
-
-                // Cube is straddling the surface
-                if ((cubeindex != 255) && (cubeindex != 0))
-                {
-                    e[0] = eax[i * ny + j];
-                    e[1] = eax[i * ny + (j + 1)];
-                    e[2] = ebx[i * ny + j];
-                    e[3] = ebx[i * ny + (j + 1)];
-                    e[4] = eay[i * ny + j];
-                    e[5] = eay[(i + 1) * ny + j];
-                    e[6] = eby[i * ny + j];
-                    e[7] = eby[(i + 1) * ny + j];
-                    e[8] = ez[i * ny + j];
-                    e[9] = ez[(i + 1) * ny + j];
-                    e[10] = ez[i * ny + (j + 1)];
-                    e[11] = ez[(i + 1) * ny + (j + 1)];
-
-                    for (int h = 0; TriangleTable[cubeindex][h] != -1; h += 3)
-                    {
-                        triangle.push_back(e[TriangleTable[cubeindex][h + 0]]);
-                        triangle.push_back(e[TriangleTable[cubeindex][h + 1]]);
-                        triangle.push_back(e[TriangleTable[cubeindex][h + 2]]);
-                    }
-                }
-            }
-        }
-
-        std::swap(a, b);
-
-        za = zb;
-        std::swap(eax, ebx);
-        std::swap(eay, eby);
-        std::swap(u, v);
+      }
     }
 
-    delete[] a;
-    delete[] b;
-    delete[] u;
-    delete[] v;
+    // Create vertical straddling edges
+    for (int i = nax; i < nbx; i++) {
+      for (int j = nay; j < nby; j++) {
+        // if ((a[i*ny + j] < 0.0) && (b[i*ny + j] >= 0.0) || (a[i*ny + j] >=
+        // 0.0) && (b[i*ny + j] < 0.0))
+        if (!((a[i * ny + j] < 0.0) == !(b[i * ny + j] >= 0.0))) {
+          vertex.push_back(Dichotomy(u[i * ny + j], v[i * ny + j],
+                                     a[i * ny + j], b[i * ny + j], d[2],
+                                     epsilon));
+          normal.push_back(Normal(vertex.back()));
+          ez[i * ny + j] = nv;
+          nv++;
+        }
+      }
+    }
 
-    delete[] eax;
-    delete[] eay;
-    delete[] ebx;
-    delete[] eby;
-    delete[] ez;
+    // Create mesh
+    for (int i = nax; i < nbx - 1; i++) {
+      for (int j = nay; j < nby - 1; j++) {
+        int cubeindex = 0;
+        if (a[i * ny + j] < 0.0) cubeindex |= 1;
+        if (a[(i + 1) * ny + j] < 0.0) cubeindex |= 2;
+        if (a[i * ny + j + 1] < 0.0) cubeindex |= 4;
+        if (a[(i + 1) * ny + j + 1] < 0.0) cubeindex |= 8;
+        if (b[i * ny + j] < 0.0) cubeindex |= 16;
+        if (b[(i + 1) * ny + j] < 0.0) cubeindex |= 32;
+        if (b[i * ny + j + 1] < 0.0) cubeindex |= 64;
+        if (b[(i + 1) * ny + j + 1] < 0.0) cubeindex |= 128;
 
-    std::vector<int> normals = triangle;
+        // Cube is straddling the surface
+        if ((cubeindex != 255) && (cubeindex != 0)) {
+          e[0] = eax[i * ny + j];
+          e[1] = eax[i * ny + (j + 1)];
+          e[2] = ebx[i * ny + j];
+          e[3] = ebx[i * ny + (j + 1)];
+          e[4] = eay[i * ny + j];
+          e[5] = eay[(i + 1) * ny + j];
+          e[6] = eby[i * ny + j];
+          e[7] = eby[(i + 1) * ny + j];
+          e[8] = ez[i * ny + j];
+          e[9] = ez[(i + 1) * ny + j];
+          e[10] = ez[i * ny + (j + 1)];
+          e[11] = ez[(i + 1) * ny + (j + 1)];
 
-    g = Mesh(vertex, normal, triangle, normals);
+          for (int h = 0; TriangleTable[cubeindex][h] != -1; h += 3) {
+            triangle.push_back(e[TriangleTable[cubeindex][h + 0]]);
+            triangle.push_back(e[TriangleTable[cubeindex][h + 1]]);
+            triangle.push_back(e[TriangleTable[cubeindex][h + 2]]);
+          }
+        }
+      }
+    }
+
+    std::swap(a, b);
+
+    za = zb;
+    std::swap(eax, ebx);
+    std::swap(eay, eby);
+    std::swap(u, v);
+  }
+
+  delete[] a;
+  delete[] b;
+  delete[] u;
+  delete[] v;
+
+  delete[] eax;
+  delete[] eay;
+  delete[] ebx;
+  delete[] eby;
+  delete[] ez;
+
+  std::vector<int> normals = triangle;
+
+  g = Mesh(vertex, normal, triangle, normals);
 }
 
 /*!
@@ -291,47 +254,42 @@ void AnalyticScalarField::Polygonize(int n, Mesh &g, const Box &box, const doubl
 \param epsilon Precision.
 \return Point on the implicit surface.
 */
-Vector AnalyticScalarField::Dichotomy(Vector a, Vector b, double va, double vb, double length,
-                                      const double &epsilon) const
-{
-    int ia = va > 0.0 ? 1 : -1;
+Vector AnalyticScalarField::Dichotomy(Vector a, Vector b, double va, double vb,
+                                      double length,
+                                      const double& epsilon) const {
+  int ia = va > 0.0 ? 1 : -1;
 
-    // Get an accurate first guess
-    Vector c = (vb * a - va * b) / (vb - va);
+  // Get an accurate first guess
+  Vector c = (vb * a - va * b) / (vb - va);
 
-    while (length > epsilon)
-    {
-        double vc = Value(c);
-        int ic = vc > 0.0 ? 1 : -1;
-        if (ia + ic == 0)
-        {
-            b = c;
-        }
-        else
-        {
-            ia = ic;
-            a = c;
-        }
-        length *= 0.5;
-        c = 0.5 * (a + b);
+  while (length > epsilon) {
+    double vc = Value(c);
+    int ic = vc > 0.0 ? 1 : -1;
+    if (ia + ic == 0) {
+      b = c;
+    } else {
+      ia = ic;
+      a = c;
     }
-    return c;
+    length *= 0.5;
+    c = 0.5 * (a + b);
+  }
+  return c;
 }
 
 /*!
 \brief Compute the gradient of the field.
 \param p Point.
 */
-Vector AnalyticScalarField::Gradient(const Vector &p) const
-{
-    double x =
-        Value(Vector(p[0] + Epsilon, p[1], p[2])) - Value(Vector(p[0] - Epsilon, p[1], p[2]));
-    double y =
-        Value(Vector(p[0], p[1] + Epsilon, p[2])) - Value(Vector(p[0], p[1] - Epsilon, p[2]));
-    double z =
-        Value(Vector(p[0], p[1], p[2] + Epsilon)) - Value(Vector(p[0], p[1], p[2] - Epsilon));
+Vector AnalyticScalarField::Gradient(const Vector& p) const {
+  double x = Value(Vector(p[0] + Epsilon, p[1], p[2])) -
+             Value(Vector(p[0] - Epsilon, p[1], p[2]));
+  double y = Value(Vector(p[0], p[1] + Epsilon, p[2])) -
+             Value(Vector(p[0], p[1] - Epsilon, p[2]));
+  double z = Value(Vector(p[0], p[1], p[2] + Epsilon)) -
+             Value(Vector(p[0], p[1], p[2] - Epsilon));
 
-    return Vector(x, y, z) * (0.5 / Epsilon);
+  return Vector(x, y, z) * (0.5 / Epsilon);
 }
 
 /*!
@@ -341,30 +299,35 @@ Vector AnalyticScalarField::Gradient(const Vector &p) const
 
 \param p Point (should be on the surface).
 */
-Vector AnalyticScalarField::Normal(const Vector &p) const
-{
-    Vector normal = Normalized(Gradient(p));
+Vector AnalyticScalarField::Normal(const Vector& p) const {
+  Vector normal = Normalized(Gradient(p));
 
-    return normal;
+  return normal;
 }
 
 int AnalyticScalarField::edgeTable[256] = {
-    0,    273,  545,  816,  1042, 1283, 1587, 1826, 2082, 2355, 2563, 2834, 3120, 3361, 3601, 3840,
-    324,  85,   869,  628,  1366, 1095, 1911, 1638, 2406, 2167, 2887, 2646, 3444, 3173, 3925, 3652,
-    644,  917,  165,  436,  1686, 1927, 1207, 1446, 2726, 2999, 2183, 2454, 3764, 4005, 3221, 3460,
-    960,  721,  481,  240,  2002, 1731, 1523, 1250, 3042, 2803, 2499, 2258, 4080, 3809, 3537, 3264,
-    1096, 1369, 1641, 1912, 90,   331,  635,  874,  3178, 3451, 3659, 3930, 2168, 2409, 2649, 2888,
-    1292, 1053, 1837, 1596, 286,  15,   831,  558,  3374, 3135, 3855, 3614, 2364, 2093, 2845, 2572,
-    1740, 2013, 1261, 1532, 734,  975,  255,  494,  3822, 4095, 3279, 3550, 2812, 3053, 2269, 2508,
-    1928, 1689, 1449, 1208, 922,  651,  443,  170,  4010, 3771, 3467, 3226, 3000, 2729, 2457, 2184,
-    2184, 2457, 2729, 3000, 3226, 3467, 3771, 4010, 170,  443,  651,  922,  1208, 1449, 1689, 1928,
-    2508, 2269, 3053, 2812, 3550, 3279, 4095, 3822, 494,  255,  975,  734,  1532, 1261, 2013, 1740,
-    2572, 2845, 2093, 2364, 3614, 3855, 3135, 3374, 558,  831,  15,   286,  1596, 1837, 1053, 1292,
-    2888, 2649, 2409, 2168, 3930, 3659, 3451, 3178, 874,  635,  331,  90,   1912, 1641, 1369, 1096,
-    3264, 3537, 3809, 4080, 2258, 2499, 2803, 3042, 1250, 1523, 1731, 2002, 240,  481,  721,  960,
-    3460, 3221, 4005, 3764, 2454, 2183, 2999, 2726, 1446, 1207, 1927, 1686, 436,  165,  917,  644,
-    3652, 3925, 3173, 3444, 2646, 2887, 2167, 2406, 1638, 1911, 1095, 1366, 628,  869,  85,   324,
-    3840, 3601, 3361, 3120, 2834, 2563, 2355, 2082, 1826, 1587, 1283, 1042, 816,  545,  273,  0};
+    0,    273,  545,  816,  1042, 1283, 1587, 1826, 2082, 2355, 2563, 2834,
+    3120, 3361, 3601, 3840, 324,  85,   869,  628,  1366, 1095, 1911, 1638,
+    2406, 2167, 2887, 2646, 3444, 3173, 3925, 3652, 644,  917,  165,  436,
+    1686, 1927, 1207, 1446, 2726, 2999, 2183, 2454, 3764, 4005, 3221, 3460,
+    960,  721,  481,  240,  2002, 1731, 1523, 1250, 3042, 2803, 2499, 2258,
+    4080, 3809, 3537, 3264, 1096, 1369, 1641, 1912, 90,   331,  635,  874,
+    3178, 3451, 3659, 3930, 2168, 2409, 2649, 2888, 1292, 1053, 1837, 1596,
+    286,  15,   831,  558,  3374, 3135, 3855, 3614, 2364, 2093, 2845, 2572,
+    1740, 2013, 1261, 1532, 734,  975,  255,  494,  3822, 4095, 3279, 3550,
+    2812, 3053, 2269, 2508, 1928, 1689, 1449, 1208, 922,  651,  443,  170,
+    4010, 3771, 3467, 3226, 3000, 2729, 2457, 2184, 2184, 2457, 2729, 3000,
+    3226, 3467, 3771, 4010, 170,  443,  651,  922,  1208, 1449, 1689, 1928,
+    2508, 2269, 3053, 2812, 3550, 3279, 4095, 3822, 494,  255,  975,  734,
+    1532, 1261, 2013, 1740, 2572, 2845, 2093, 2364, 3614, 3855, 3135, 3374,
+    558,  831,  15,   286,  1596, 1837, 1053, 1292, 2888, 2649, 2409, 2168,
+    3930, 3659, 3451, 3178, 874,  635,  331,  90,   1912, 1641, 1369, 1096,
+    3264, 3537, 3809, 4080, 2258, 2499, 2803, 3042, 1250, 1523, 1731, 2002,
+    240,  481,  721,  960,  3460, 3221, 4005, 3764, 2454, 2183, 2999, 2726,
+    1446, 1207, 1927, 1686, 436,  165,  917,  644,  3652, 3925, 3173, 3444,
+    2646, 2887, 2167, 2406, 1638, 1911, 1095, 1366, 628,  869,  85,   324,
+    3840, 3601, 3361, 3120, 2834, 2563, 2355, 2082, 1826, 1587, 1283, 1042,
+    816,  545,  273,  0};
 
 int AnalyticScalarField::TriangleTable[256][16] = {
     {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},

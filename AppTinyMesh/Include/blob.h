@@ -3,47 +3,43 @@
 
 #include "mathematics.h"
 
-class Blob
-{
-  public:
-    virtual double Value(const Vector &) const = 0;
+class Blob {
+ public:
+  virtual double Value(const Vector&) const = 0;
 
-  protected:
+ protected:
 };
 
-class BlobSphere : public Blob
-{
-  public:
-    BlobSphere(double radius, const Vector &center)
-        : m_radius(radius), m_center(center),
-          m_inverseSquaredRadius(1.0 / (m_radius * m_radius))
-    {
-    }
+class BlobSphere : public Blob {
+ public:
+  BlobSphere(double radius, const Vector& center)
+      : m_radius(radius),
+        m_center(center),
+        m_inverseSquaredRadius(1.0 / (m_radius * m_radius)) {}
 
-    double Value(const Vector &p) const override;
+  double Value(const Vector& p) const override;
 
-  private:
-    double m_radius;
-    Vector m_center;
-    double m_inverseSquaredRadius;
+ private:
+  double m_radius;
+  Vector m_center;
+  double m_inverseSquaredRadius;
 };
 
-class BlobCapsule : public Blob
-{
-  public:
-    BlobCapsule(double radius, const Vector &p1, const Vector &p2)
-        : m_radius(radius), m_p1(p1), m_p2(p2),
-          m_inverseSquaredRadius(1.0 / (radius * radius))
-    {
-    }
+class BlobCapsule : public Blob {
+ public:
+  BlobCapsule(double radius, const Vector& p1, const Vector& p2)
+      : m_radius(radius),
+        m_p1(p1),
+        m_p2(p2),
+        m_inverseSquaredRadius(1.0 / (radius * radius)) {}
 
-    double Value(const Vector &p) const override;
+  double Value(const Vector& p) const override;
 
-  private:
-    double m_radius;
-    Vector m_p1;
-    Vector m_p2;
-    double m_inverseSquaredRadius;
+ private:
+  double m_radius;
+  Vector m_p1;
+  Vector m_p2;
+  double m_inverseSquaredRadius;
 };
 
-#endif // BLOB_H
+#endif  // BLOB_H

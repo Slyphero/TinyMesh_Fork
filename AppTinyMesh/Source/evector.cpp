@@ -1,9 +1,9 @@
 // Vector
 
 // Self include
-#include "mathematics.h"
-
 #include <iostream>
+
+#include "mathematics.h"
 
 /*!
 \class Vector mathematics.h
@@ -54,10 +54,7 @@ the components.
 This function does not check if the vector is null,
 which might resulting in errors.
 */
-void Normalize(Vector &u)
-{
-    u *= 1.0 / Norm(u);
-}
+void Normalize(Vector& u) { u *= 1.0 / Norm(u); }
 
 /*!
 \brief Returns a vector orthogonal to the argument vector.
@@ -71,31 +68,25 @@ the third coordinate is set to 0.
 The returned orthogonal vector lies in the plane orthogonal
 to the first vector.
 */
-Vector Vector::Orthogonal() const
-{
-    Vector a = Abs(*this);
-    int i = 0;
-    int j = 1;
-    if (a[0] > a[1])
-    {
-        if (a[2] > a[1])
-        {
-            j = 2;
-        }
+Vector Vector::Orthogonal() const {
+  Vector a = Abs(*this);
+  int i = 0;
+  int j = 1;
+  if (a[0] > a[1]) {
+    if (a[2] > a[1]) {
+      j = 2;
     }
-    else
-    {
-        i = 1;
-        j = 2;
-        if (a[0] > a[2])
-        {
-            j = 0;
-        }
+  } else {
+    i = 1;
+    j = 2;
+    if (a[0] > a[2]) {
+      j = 0;
     }
-    a = Vector::Null;
-    a[i] = c[j];
-    a[j] = -c[i];
-    return a;
+  }
+  a = Vector::Null;
+  a[i] = c[j];
+  a[j] = -c[i];
+  return a;
 }
 
 /*!
@@ -103,10 +94,9 @@ Vector Vector::Orthogonal() const
 \param u Vector.
 \param s Stream.
 */
-std::ostream &operator<<(std::ostream &s, const Vector &u)
-{
-    s << "Vector(" << u.c[0] << ',' << u.c[1] << ',' << u.c[2] << ')';
-    return s;
+std::ostream& operator<<(std::ostream& s, const Vector& u) {
+  s << "Vector(" << u.c[0] << ',' << u.c[1] << ',' << u.c[2] << ')';
+  return s;
 }
 
 /*!
@@ -116,8 +106,7 @@ This algorithm pickes the minor axis in order to reduce numerical instability
 \param x, y Returned vectors such that (x,y,n) form an orthonormal basis
 (provided n is normalized).
 */
-void Vector::Orthonormal(Vector &x, Vector &y) const
-{
-    x = Normalized(Orthogonal());
-    y = Normalized(*this / x);
+void Vector::Orthonormal(Vector& x, Vector& y) const {
+  x = Normalized(Orthogonal());
+  y = Normalized(*this / x);
 }
