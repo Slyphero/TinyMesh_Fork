@@ -31,8 +31,11 @@ class MainWindow : public QMainWindow {
   void editingSceneRight(const Ray&);
   void BoxMeshExample();
   void SphereImplicitExample();
+
   void TreeExample();
   void BlobSphereExample();
+  void BlobCapsuleExample();
+
   void ResetCamera();
   void UpdateMaterial();
 };
