@@ -110,8 +110,8 @@ void MainWindow::TreeExample()
     AnalyticTree tree;
     Mesh implicitMesh;
 
-    std::shared_ptr<ImplicitBlob> blob1 = std::make_shared<ImplicitBlob>();
-    std::shared_ptr<ImplicitBlob> blob2 = std::make_shared<ImplicitBlob>();
+    std::shared_ptr<ImplicitBlob> blob1 = std::make_shared<ImplicitBlob>(0.5);
+    std::shared_ptr<ImplicitBlob> blob2 = std::make_shared<ImplicitBlob>(0.7);
 
     for (int i = 0; i < 4; i++)
     {

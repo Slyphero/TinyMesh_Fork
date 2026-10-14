@@ -54,11 +54,15 @@ class PotentialCapsule : public Potential
 class ImplicitBlob : public ImplicitNode
 {
   public:
+    ImplicitBlob(double threshold) : m_threshold(threshold)
+    {
+    }
+
     double Value(const Vector &p) const override;
     void AddPotential(std::shared_ptr<Potential> potential);
 
   private:
-    double m_threshold = 0.1;
+    double m_threshold;
     std::vector<std::shared_ptr<Potential>> m_potentials;
 };
 
