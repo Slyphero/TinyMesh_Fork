@@ -7,37 +7,40 @@
 #include "realtime.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
+namespace Ui
+{
 class Assets;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow {
-  Q_OBJECT
- private:
-  Ui::Assets* uiw;  //!< Interface
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+  private:
+    Ui::Assets *uiw; //!< Interface
 
-  MeshWidget* meshWidget;  //!< Viewer
-  MeshColor meshColor;     //!< Mesh.
+    MeshWidget *meshWidget; //!< Viewer
+    MeshColor meshColor;    //!< Mesh.
 
- public:
-  MainWindow();
-  ~MainWindow();
-  void CreateActions();
-  void UpdateGeometry();
+  public:
+    MainWindow();
+    ~MainWindow();
+    void CreateActions();
+    void UpdateGeometry();
 
- public slots:
-  void editingSceneLeft(const Ray&);
-  void editingSceneRight(const Ray&);
-  void BoxMeshExample();
-  void SphereImplicitExample();
+  public slots:
+    void editingSceneLeft(const Ray &);
+    void editingSceneRight(const Ray &);
+    void BoxMeshExample();
+    void SphereImplicitExample();
 
-  void TreeExample();
-  void BlobSphereExample();
-  void BlobCapsuleExample();
+    void TreeExample();
+    void BlobSphereExample();
+    void BlobCapsuleExample();
+    void ShowSDFExample();
 
-  void ResetCamera();
-  void UpdateMaterial();
+    void ResetCamera();
+    void UpdateMaterial();
 };
 
 #endif

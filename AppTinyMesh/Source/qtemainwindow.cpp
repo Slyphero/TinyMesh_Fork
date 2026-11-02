@@ -2,236 +2,282 @@
 #include "qte.h"
 #include "ui_interface.h"
 
-MainWindow::MainWindow() : QMainWindow(), uiw(new Ui::Assets) {
-  // Chargement de l'interface
-  uiw->setupUi(this);
+MainWindow::MainWindow() : QMainWindow(), uiw(new Ui::Assets)
+{
+    // Chargement de l'interface
+    uiw->setupUi(this);
 
-  // Chargement du GLWidget
-  meshWidget = new MeshWidget;
-  QGridLayout* GLlayout = new QGridLayout;
-  GLlayout->addWidget(meshWidget, 0, 0);
-  GLlayout->setContentsMargins(0, 0, 0, 0);
-  uiw->widget_GL->setLayout(GLlayout);
+    // Chargement du GLWidget
+    meshWidget = new MeshWidget;
+    QGridLayout *GLlayout = new QGridLayout;
+    GLlayout->addWidget(meshWidget, 0, 0);
+    GLlayout->setContentsMargins(0, 0, 0, 0);
+    uiw->widget_GL->setLayout(GLlayout);
 
-  // Creation des connect
-  CreateActions();
+    // Creation des connect
+    CreateActions();
 
-  meshWidget->SetCamera(Camera(Vector(10, 0, 0), Vector(0.0, 0.0, 0.0)));
+    meshWidget->SetCamera(Camera(Vector(10, 0, 0), Vector(0.0, 0.0, 0.0)));
 }
 
-MainWindow::~MainWindow() { delete meshWidget; }
-
-void MainWindow::CreateActions() {
-  // Buttons
-  connect(uiw->boxMesh, SIGNAL(clicked()), this, SLOT(BoxMeshExample()));
-  connect(uiw->sphereImplicit, SIGNAL(clicked()), this,
-          SLOT(SphereImplicitExample()));
-
-  connect(uiw->tree, SIGNAL(clicked()), this, SLOT(TreeExample()));
-  connect(uiw->blobSphere, SIGNAL(clicked()), this, SLOT(BlobSphereExample()));
-  connect(uiw->blobCapsule, SIGNAL(clicked()), this,
-          SLOT(BlobCapsuleExample()));
-
-  connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
-  connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
-  connect(uiw->radioShadingButton_1, SIGNAL(clicked()), this,
-          SLOT(UpdateMaterial()));
-  connect(uiw->radioShadingButton_2, SIGNAL(clicked()), this,
-          SLOT(UpdateMaterial()));
-
-  // Widget edition
-  connect(meshWidget, SIGNAL(_signalEditSceneLeft(const Ray&)), this,
-          SLOT(editingSceneLeft(const Ray&)));
-  connect(meshWidget, SIGNAL(_signalEditSceneRight(const Ray&)), this,
-          SLOT(editingSceneRight(const Ray&)));
+MainWindow::~MainWindow()
+{
+    delete meshWidget;
 }
 
-void MainWindow::editingSceneLeft(const Ray&) {}
+void MainWindow::CreateActions()
+{
+    // Buttons
+    connect(uiw->boxMesh, SIGNAL(clicked()), this, SLOT(BoxMeshExample()));
+    connect(uiw->sphereImplicit, SIGNAL(clicked()), this, SLOT(SphereImplicitExample()));
 
-void MainWindow::editingSceneRight(const Ray&) {}
+    connect(uiw->tree, SIGNAL(clicked()), this, SLOT(TreeExample()));
+    connect(uiw->blobSphere, SIGNAL(clicked()), this, SLOT(BlobSphereExample()));
+    connect(uiw->blobCapsule, SIGNAL(clicked()), this, SLOT(BlobCapsuleExample()));
 
-void MainWindow::BoxMeshExample() {
-  Mesh boxMesh = Mesh(Box(1.0));
+    connect(uiw->showSDF, SIGNAL(clicked()), this, SLOT(ShowSDFExample()));
 
-  std::vector<Color> cols;
-  cols.resize(boxMesh.Vertexes());
-  for (size_t i = 0; i < cols.size(); i++)
-    cols[i] = Color(double(i) / 6.0, fmod(double(i) * 39.478378, 1.0), 0.0);
+    connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
+    connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
+    connect(uiw->radioShadingButton_1, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
+    connect(uiw->radioShadingButton_2, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
 
-  meshColor = MeshColor(boxMesh, cols, boxMesh.VertexIndexes());
-  UpdateGeometry();
+    // Widget edition
+    connect(meshWidget, SIGNAL(_signalEditSceneLeft(const Ray &)), this,
+            SLOT(editingSceneLeft(const Ray &)));
+    connect(meshWidget, SIGNAL(_signalEditSceneRight(const Ray &)), this,
+            SLOT(editingSceneRight(const Ray &)));
 }
 
-void MainWindow::SphereImplicitExample() {
-  AnalyticScalarField implicit;
-
-  Mesh implicitMesh;
-  implicit.Polygonize(31, implicitMesh, Box(2.0));
-
-  std::vector<Color> cols;
-  cols.resize(implicitMesh.Vertexes());
-  for (size_t i = 0; i < cols.size(); i++) cols[i] = Color(0.8, 0.8, 0.8);
-
-  meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
-  UpdateGeometry();
+void MainWindow::editingSceneLeft(const Ray &)
+{
 }
 
-void MainWindow::TreeExample() {
-  AnalyticTree tree;
-  Mesh implicitMesh;
-
-  std::shared_ptr<ImplicitBlob> blob1 = std::make_shared<ImplicitBlob>(0.5);
-  std::shared_ptr<ImplicitBlob> blob2 = std::make_shared<ImplicitBlob>(0.7);
-
-  for (int i = 0; i < 4; i++) {
-    blob1->AddPotential(
-        std::make_shared<PotentialSphere>(1.0, Vector(1.2 * i, 0.0, 0.0)));
-  }
-  for (int i = 0; i < 5; i++) {
-    blob2->AddPotential(std::make_shared<PotentialCapsule>(
-        1.0, Vector(1.0, 3.0 + 1.2 * i, 0.0), Vector(2.0, 3.0 + 1.2 * i, 0.0)));
-  }
-
-  std::shared_ptr<ImplicitNode> blobs =
-      std::make_shared<ImplicitUnion>(blob1, blob2);
-  std::shared_ptr<ImplicitNode> sdfSphere =
-      std::make_shared<SDFSphere>(1.0, Vector(1.0, 0.0, 0.0));
-
-  std::shared_ptr<ImplicitNode> difference =
-      std::make_shared<ImplicitDifference>(blobs, sdfSphere);
-
-  std::shared_ptr<ImplicitNode> sdfCapsule = std::make_shared<SDFCapsule>(
-      1.0, Vector(1.0, 0.0, 2.0), Vector(2.0, 0.0, 2.0));
-
-  std::shared_ptr<ImplicitNode> union1 =
-      std::make_shared<ImplicitUnion>(difference, sdfCapsule);
-
-  std::shared_ptr<ImplicitNode> torus =
-      std::make_shared<SDFTorus>(2.0, 0.75, Vector(1.0, 1.0, 1.0));
-
-  std::shared_ptr<ImplicitNode> union2 =
-      std::make_shared<ImplicitUnion>(union1, torus);
-
-  std::shared_ptr<ImplicitNode> sdfBox =
-      std::make_shared<SDFBox>(1.0, 2.0, 1.0, Vector(2.0, 2.0, 2.0));
-
-  std::shared_ptr<ImplicitNode> union3 =
-      std::make_shared<ImplicitUnion>(union2, sdfBox);
-
-  std::shared_ptr<ImplicitNode> sdfSphere2 =
-      std::make_shared<SDFSphere>(1., Vector(4.5, 3.5, 3.0));
-
-  std::shared_ptr<ImplicitNode> union4 =
-      std::make_shared<ImplicitSmoothUnion>(union3, sdfSphere2, 1.50);
-
-  std::shared_ptr<ImplicitNode> root = union4;
-  tree.SetRoot(root);
-
-  tree.Polygonize(150, implicitMesh, Box(10.0));
-
-  std::vector<Color> cols;
-  cols.resize(implicitMesh.Vertexes());
-  for (size_t i = 0; i < cols.size(); i++) {
-    cols[i] = Color(0.2, 0.6, 0.9);
-  }
-
-  meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
-  UpdateGeometry();
+void MainWindow::editingSceneRight(const Ray &)
+{
 }
 
-void MainWindow::BlobSphereExample() {
-  AnalyticTree tree;
-  Mesh implicitMesh;
+void MainWindow::BoxMeshExample()
+{
+    Mesh boxMesh = Mesh(Box(1.0));
 
-  std::shared_ptr<ImplicitBlob> blob = std::make_shared<ImplicitBlob>(0.5);
+    std::vector<Color> cols;
+    cols.resize(boxMesh.Vertexes());
+    for (size_t i = 0; i < cols.size(); i++)
+        cols[i] = Color(double(i) / 6.0, fmod(double(i) * 39.478378, 1.0), 0.0);
 
-  std::shared_ptr<PotentialSphere> pot1 =
-      std::make_shared<PotentialSphere>(1.0, Vector(0.0, 0.0, 0.0));
-  pot1->SetColor(Color(1.0, 0.0, 0.0));
-  blob->AddPotential(pot1);
-
-  std::shared_ptr<PotentialSphere> pot2 =
-      std::make_shared<PotentialSphere>(1.5, Vector(0.0, 1.5, 0.0));
-  pot2->SetColor(Color(0.0, 1.0, 0.0));
-  blob->AddPotential(pot2);
-
-  std::shared_ptr<PotentialSphere> pot3 =
-      std::make_shared<PotentialSphere>(0.5, Vector(1.2, 1.2, 0.0));
-  pot3->SetColor(Color(0.0, 0.0, 1.0));
-  blob->AddPotential(pot3);
-
-  std::shared_ptr<PotentialSphere> pot4 =
-      std::make_shared<PotentialSphere>(2., Vector(1.5, 0.0, 1.0));
-  pot4->SetColor(Color(1.0, 0.0, 1.0));
-  blob->AddPotential(pot4);
-
-  std::shared_ptr<ImplicitNode> root = blob;
-  tree.SetRoot(root);
-
-  tree.Polygonize(150, implicitMesh, Box(10.0));
-
-  std::vector<Color> cols;
-  cols.resize(implicitMesh.Vertexes());
-
-  for (size_t i = 0; i < cols.size(); i++) {
-    cols[i] = root->ColorAt(implicitMesh.Vertex(i));
-  }
-
-  meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
-
-  UpdateGeometry();
+    meshColor = MeshColor(boxMesh, cols, boxMesh.VertexIndexes());
+    UpdateGeometry();
 }
 
-void MainWindow::BlobCapsuleExample() {
-  AnalyticTree tree;
-  Mesh implicitMesh;
-  std::shared_ptr<ImplicitBlob> blob = std::make_shared<ImplicitBlob>(0.7);
+void MainWindow::SphereImplicitExample()
+{
+    AnalyticScalarField implicit;
 
-  std::shared_ptr<PotentialCapsule> pot1 = std::make_shared<PotentialCapsule>(
-      1.0, Vector(0.0, 0.0, 0.0), Vector(1.5, 0.5, 0.0));
-  pot1->SetColor(Color(1.0, 0.0, 0.0));
-  blob->AddPotential(pot1);
+    Mesh implicitMesh;
+    implicit.Polygonize(31, implicitMesh, Box(2.0));
 
-  std::shared_ptr<PotentialCapsule> pot2 = std::make_shared<PotentialCapsule>(
-      1.0, Vector(2.0, 0.7, 0.0), Vector(3.0, 0.9, 0.3));
-  pot2->SetColor(Color(0.0, 0.0, 1.0));
-  blob->AddPotential(pot2);
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+    for (size_t i = 0; i < cols.size(); i++)
+        cols[i] = Color(0.8, 0.8, 0.8);
 
-  std::shared_ptr<ImplicitNode> root = blob;
-  tree.SetRoot(root);
-  tree.Polygonize(150, implicitMesh, Box(10.0));
-
-  std::vector<Color> cols;
-  cols.resize(implicitMesh.Vertexes());
-
-  for (size_t i = 0; i < cols.size(); i++) {
-    cols[i] = root->ColorAt(implicitMesh.Vertex(i));
-  }
-
-  meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
-
-  UpdateGeometry();
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+    UpdateGeometry();
 }
 
-void MainWindow::UpdateGeometry() {
-  meshWidget->ClearAll();
-  meshWidget->AddMesh("BoxMesh", meshColor);
+void MainWindow::TreeExample()
+{
+    AnalyticTree tree;
+    Mesh implicitMesh;
 
-  uiw->lineEdit->setText(QString::number(meshColor.Vertexes()));
-  uiw->lineEdit_2->setText(QString::number(meshColor.Triangles()));
+    std::shared_ptr<ImplicitBlob> blob1 = std::make_shared<ImplicitBlob>(0.5);
+    std::shared_ptr<ImplicitBlob> blob2 = std::make_shared<ImplicitBlob>(0.7);
 
-  UpdateMaterial();
+    for (int i = 0; i < 4; i++)
+    {
+        blob1->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(1.2 * i, 0.0, 0.0)));
+    }
+    for (int i = 0; i < 5; i++)
+    {
+        blob2->AddPotential(std::make_shared<PotentialCapsule>(1.0, Vector(1.0, 3.0 + 1.2 * i, 0.0),
+                                                               Vector(2.0, 3.0 + 1.2 * i, 0.0)));
+    }
+
+    std::shared_ptr<ImplicitNode> blobs = std::make_shared<ImplicitUnion>(blob1, blob2);
+    std::shared_ptr<ImplicitNode> sdfSphere =
+        std::make_shared<SDFSphere>(1.0, Vector(1.0, 0.0, 0.0));
+
+    std::shared_ptr<ImplicitNode> difference =
+        std::make_shared<ImplicitDifference>(blobs, sdfSphere);
+
+    std::shared_ptr<ImplicitNode> sdfCapsule =
+        std::make_shared<SDFCapsule>(1.0, Vector(1.0, 0.0, 2.0), Vector(2.0, 0.0, 2.0));
+
+    std::shared_ptr<ImplicitNode> union1 = std::make_shared<ImplicitUnion>(difference, sdfCapsule);
+
+    std::shared_ptr<ImplicitNode> torus =
+        std::make_shared<SDFTorus>(2.0, 0.75, Vector(1.0, 1.0, 1.0));
+
+    std::shared_ptr<ImplicitNode> union2 = std::make_shared<ImplicitUnion>(union1, torus);
+
+    std::shared_ptr<ImplicitNode> sdfBox =
+        std::make_shared<SDFBox>(1.0, 2.0, 1.0, Vector(2.0, 2.0, 2.0));
+
+    std::shared_ptr<ImplicitNode> union3 = std::make_shared<ImplicitUnion>(union2, sdfBox);
+
+    std::shared_ptr<ImplicitNode> sdfSphere2 =
+        std::make_shared<SDFSphere>(1., Vector(4.5, 3.5, 3.0));
+
+    std::shared_ptr<ImplicitNode> union4 =
+        std::make_shared<ImplicitSmoothUnion>(union3, sdfSphere2, 1.50);
+
+    std::shared_ptr<ImplicitNode> root = union4;
+    tree.SetRoot(root);
+
+    tree.Polygonize(150, implicitMesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = Color(0.2, 0.6, 0.9);
+    }
+
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+    UpdateGeometry();
 }
 
-void MainWindow::UpdateMaterial() {
-  meshWidget->UseWireframeGlobal(uiw->wireframe->isChecked());
+void MainWindow::BlobSphereExample()
+{
+    AnalyticTree tree;
+    Mesh implicitMesh;
 
-  if (uiw->radioShadingButton_1->isChecked())
-    meshWidget->SetMaterialGlobal(MeshMaterial::Normal);
-  else
-    meshWidget->SetMaterialGlobal(MeshMaterial::Color);
+    std::shared_ptr<ImplicitBlob> blob = std::make_shared<ImplicitBlob>(0.5);
+
+    std::shared_ptr<PotentialSphere> pot1 =
+        std::make_shared<PotentialSphere>(1.0, Vector(0.0, 0.0, 0.0));
+    pot1->SetColor(Color(1.0, 0.0, 0.0));
+    blob->AddPotential(pot1);
+
+    std::shared_ptr<PotentialSphere> pot2 =
+        std::make_shared<PotentialSphere>(1.5, Vector(0.0, 1.5, 0.0));
+    pot2->SetColor(Color(0.0, 1.0, 0.0));
+    blob->AddPotential(pot2);
+
+    std::shared_ptr<PotentialSphere> pot3 =
+        std::make_shared<PotentialSphere>(0.5, Vector(1.2, 1.2, 0.0));
+    pot3->SetColor(Color(0.0, 0.0, 1.0));
+    blob->AddPotential(pot3);
+
+    std::shared_ptr<PotentialSphere> pot4 =
+        std::make_shared<PotentialSphere>(2., Vector(1.5, 0.0, 1.0));
+    pot4->SetColor(Color(1.0, 0.0, 1.0));
+    blob->AddPotential(pot4);
+
+    std::shared_ptr<ImplicitNode> root = blob;
+    tree.SetRoot(root);
+
+    tree.Polygonize(150, implicitMesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = root->ColorAt(implicitMesh.Vertex(i));
+    }
+
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+
+    UpdateGeometry();
 }
 
-void MainWindow::ResetCamera() {
-  meshWidget->SetCamera(Camera(Vector(-10.0), Vector(0.0)));
+void MainWindow::BlobCapsuleExample()
+{
+    AnalyticTree tree;
+    Mesh implicitMesh;
+    std::shared_ptr<ImplicitBlob> blob = std::make_shared<ImplicitBlob>(0.7);
+
+    std::shared_ptr<PotentialCapsule> pot1 =
+        std::make_shared<PotentialCapsule>(1.0, Vector(0.0, 0.0, 0.0), Vector(1.5, 0.5, 0.0));
+    pot1->SetColor(Color(1.0, 0.0, 0.0));
+    blob->AddPotential(pot1);
+
+    std::shared_ptr<PotentialCapsule> pot2 =
+        std::make_shared<PotentialCapsule>(1.0, Vector(2.0, 0.7, 0.0), Vector(3.0, 0.9, 0.3));
+    pot2->SetColor(Color(0.0, 0.0, 1.0));
+    blob->AddPotential(pot2);
+
+    std::shared_ptr<ImplicitNode> root = blob;
+    tree.SetRoot(root);
+    tree.Polygonize(150, implicitMesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = root->ColorAt(implicitMesh.Vertex(i));
+    }
+
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+
+    UpdateGeometry();
+}
+
+void MainWindow::ShowSDFExample()
+{
+    AnalyticTree tree;
+    Mesh implicitMesh;
+
+    std::shared_ptr<SDFSphere> sphere = std::make_shared<SDFSphere>(1, Vector(-2, 0, 0));
+    std::shared_ptr<SDFCapsule> capsule =
+        std::make_shared<SDFCapsule>(1, Vector(.5, 0, 0), Vector(.5, 0, 1));
+    std::shared_ptr<SDFTorus> torus = std::make_shared<SDFTorus>(1, .5, Vector(3.5, 0, 0));
+
+    std::shared_ptr<ImplicitUnion> union1 = std::make_shared<ImplicitUnion>(sphere, capsule);
+    std::shared_ptr<ImplicitUnion> union2 = std::make_shared<ImplicitUnion>(union1, torus);
+
+    std::shared_ptr<ImplicitNode> root = union2;
+    tree.SetRoot(root);
+    tree.Polygonize(150, implicitMesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = root->ColorAt(implicitMesh.Vertex(i));
+    }
+
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+
+    UpdateGeometry();
+}
+
+void MainWindow::UpdateGeometry()
+{
+    meshWidget->ClearAll();
+    meshWidget->AddMesh("BoxMesh", meshColor);
+
+    uiw->lineEdit->setText(QString::number(meshColor.Vertexes()));
+    uiw->lineEdit_2->setText(QString::number(meshColor.Triangles()));
+
+    UpdateMaterial();
+}
+
+void MainWindow::UpdateMaterial()
+{
+    meshWidget->UseWireframeGlobal(uiw->wireframe->isChecked());
+
+    if (uiw->radioShadingButton_1->isChecked())
+        meshWidget->SetMaterialGlobal(MeshMaterial::Normal);
+    else
+        meshWidget->SetMaterialGlobal(MeshMaterial::Color);
+}
+
+void MainWindow::ResetCamera()
+{
+    meshWidget->SetCamera(Camera(Vector(-10.0), Vector(0.0)));
 }

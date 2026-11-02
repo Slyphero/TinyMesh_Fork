@@ -6,14 +6,14 @@
 #include "color.h"
 #include "mathematics.h"
 
-class ImplicitNode  // Purement virtuelle
+class ImplicitNode // Purement virtuelle
 {
- public:
-  virtual double Value(const Vector& p) const = 0;
-  virtual ~ImplicitNode() = default;
-  virtual Color ColorAt(const Vector& p) const = 0;
+  public:
+    virtual double Value(const Vector &p) const = 0;
+    virtual ~ImplicitNode() = default;
+    virtual Color ColorAt(const Vector &p) const = 0;
 
- protected:
+  protected:
 };
 
-#endif  // IMPLICITNODE_H
+#endif // IMPLICITNODE_H
