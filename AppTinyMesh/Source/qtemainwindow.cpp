@@ -235,11 +235,13 @@ void MainWindow::ShowSDFExample()
     std::shared_ptr<SDFCapsule> capsule =
         std::make_shared<SDFCapsule>(1, Vector(.5, 0, 0), Vector(.5, 0, 1));
     std::shared_ptr<SDFTorus> torus = std::make_shared<SDFTorus>(1, .5, Vector(3.5, 0, 0));
+    std::shared_ptr<SDFBox> box = std::make_shared<SDFBox>(1, 1.5, 1.5, Vector(-4.5, 0, 0));
 
     std::shared_ptr<ImplicitUnion> union1 = std::make_shared<ImplicitUnion>(sphere, capsule);
     std::shared_ptr<ImplicitUnion> union2 = std::make_shared<ImplicitUnion>(union1, torus);
+    std::shared_ptr<ImplicitUnion> union3 = std::make_shared<ImplicitUnion>(union2, box);
 
-    std::shared_ptr<ImplicitNode> root = union2;
+    std::shared_ptr<ImplicitNode> root = union3;
     tree.SetRoot(root);
     tree.Polygonize(150, implicitMesh, Box(10.0));
 
