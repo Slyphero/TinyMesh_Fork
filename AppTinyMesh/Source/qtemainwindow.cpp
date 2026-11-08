@@ -1,6 +1,7 @@
 #include "implicits.h"
 #include "qte.h"
 #include "ui_interface.h"
+#include "macros.h"
 
 MainWindow::MainWindow() : QMainWindow(), uiw(new Ui::Assets)
 {
@@ -28,19 +29,19 @@ MainWindow::~MainWindow()
 void MainWindow::CreateActions()
 {
     // Buttons
-    connect(uiw->boxMesh, SIGNAL(clicked()), this, SLOT(BoxMeshExample()));
-    connect(uiw->sphereImplicit, SIGNAL(clicked()), this, SLOT(SphereImplicitExample()));
+    CREATE_SCENE(boxMesh, BoxMeshExample);
+    CREATE_SCENE(sphereImplicit, SphereImplictExample);
 
-    connect(uiw->tree, SIGNAL(clicked()), this, SLOT(TreeExample()));
-    connect(uiw->blobSphere, SIGNAL(clicked()), this, SLOT(BlobSphereExample()));
-    connect(uiw->blobCapsule, SIGNAL(clicked()), this, SLOT(BlobCapsuleExample()));
+    CREATE_SCENE(tree, TreeExample);
+    CREATE_SCENE(blobSphere, BlobSphereExample);
+    CREATE_SCENE(blobCapsule, BlobCapsuleExample);
+    CREATE_SCENE(showSDF, ShowSDFExample);
+    CREATE_SCENE(showOperators, ShowOperatorsExample);
 
-    connect(uiw->showSDF, SIGNAL(clicked()), this, SLOT(ShowSDFExample()));
-
-    connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
-    connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
-    connect(uiw->radioShadingButton_1, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
-    connect(uiw->radioShadingButton_2, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
+    CREATE_SCENE(resetcameraButton, ResetCamera);
+    CREATE_SCENE(wireframe, UpdateMaterial);
+    CREATE_SCENE(radioShadingButton_1, UpdateMaterial);
+    CREATE_SCENE(radioShadingButton_2, UpdateMaterial);
 
     // Widget edition
     connect(meshWidget, SIGNAL(_signalEditSceneLeft(const Ray &)), this,
@@ -176,6 +177,11 @@ void MainWindow::BlobSphereExample()
     blob->AddPotential(pot4);
 
     std::shared_ptr<ImplicitNode> root = blob;
+    connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
+    connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
+    connect(uiw->radioShadingButton_1, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
+    connect(uiw->radioShadingButton_2, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
+
     tree.SetRoot(root);
 
     tree.Polygonize(150, implicitMesh, Box(10.0));
@@ -267,6 +273,48 @@ void MainWindow::ShowSDFExample()
 
     meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
 
+    UpdateGeometry();
+}
+
+void MainWindow::ShowOperatorsExample()
+{
+    AnalyticTree tree;
+    Mesh implicitMesh;
+
+    std::shared_ptr<SDFSphere> sphere = std::make_shared<SDFSphere>(1, Vector(-2, 0, 0));
+    sphere->SetColor(Color(1.0, 0.0, 0.0));
+
+    std::shared_ptr<SDFBox> box = std::make_shared<SDFBox>(1, 1.5, 1.5, Vector(0, 0, 0));
+    box->SetColor(Color(0.0, 1.0, 0.0));
+
+    std::shared_ptr<SDFCapsule> capsule =
+        std::make_shared<SDFCapsule>(1, Vector(0, -1, 0), Vector(0, -1, 1.5));
+    capsule->SetColor(Color(0, 0, 1));
+
+    std::shared_ptr<SDFTorus> torus = std::make_shared<SDFTorus>(1, .5, Vector(0, 0, -2.5));
+    torus->SetColor(Color(1.0, 1.0, 0.0));
+
+    std::shared_ptr<SDFTorus> torus2 = std::make_shared<SDFTorus>(1, .5, Vector(2, 0, -2.5));
+    torus2->SetColor(Color(1.0, 0.0, 1.0));
+
+    std::shared_ptr<ImplicitNode> union1 = std::make_shared<ImplicitSmoothUnion>(sphere, box, 1.50);
+    std::shared_ptr<ImplicitNode> difference = std::make_shared<ImplicitDifference>(union1, capsule);
+    std::shared_ptr<ImplicitNode> intersect1 = std::make_shared<ImplicitIntersection>(torus, torus2);
+    std::shared_ptr<ImplicitNode> union2 = std::make_shared<ImplicitUnion>(difference, intersect1);
+
+    std::shared_ptr<ImplicitNode> root = union2;
+    tree.SetRoot(root);
+    tree.Polygonize(150, implicitMesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = root->ColorAt(implicitMesh.Vertex(i));
+    }
+
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
     UpdateGeometry();
 }
 

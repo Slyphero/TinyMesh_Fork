@@ -38,6 +38,7 @@ class MainWindow : public QMainWindow
     void BlobSphereExample();
     void BlobCapsuleExample();
     void ShowSDFExample();
+    void ShowOperatorsExample();
 
     void ResetCamera();
     void UpdateMaterial();

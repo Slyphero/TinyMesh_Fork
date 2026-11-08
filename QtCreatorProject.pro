@@ -35,6 +35,7 @@ HEADERS += \
     AppTinyMesh/Include/camera.h \
     AppTinyMesh/Include/color.h \
     AppTinyMesh/Include/implicits.h \
+    AppTinyMesh/Include/macros.h \
     AppTinyMesh/Include/mathematics.h \
     AppTinyMesh/Include/mesh.h \
     AppTinyMesh/Include/meshcolor.h \
