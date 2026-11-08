@@ -205,9 +205,14 @@ void MainWindow::BlobCapsuleExample()
     blob->AddPotential(pot1);
 
     std::shared_ptr<PotentialCapsule> pot2 =
-        std::make_shared<PotentialCapsule>(1.0, Vector(2.0, 0.7, 0.0), Vector(3.0, 0.9, 0.3));
+        std::make_shared<PotentialCapsule>(1.0, Vector(2.5, 0.7, 0.0), Vector(3.0, 0.7, 0));
     pot2->SetColor(Color(0.0, 0.0, 1.0));
     blob->AddPotential(pot2);
+
+    std::shared_ptr<PotentialCapsule> pot3 =
+        std::make_shared<PotentialCapsule>(1.0, Vector(1.5, 1.7, 0.0), Vector(3.5, 1.9, 0.));
+    pot3->SetColor(Color(0.0, 1.0, 0.0));
+    blob->AddPotential(pot3);
 
     std::shared_ptr<ImplicitNode> root = blob;
     tree.SetRoot(root);
@@ -232,10 +237,17 @@ void MainWindow::ShowSDFExample()
     Mesh implicitMesh;
 
     std::shared_ptr<SDFSphere> sphere = std::make_shared<SDFSphere>(1, Vector(-2, 0, 0));
+    sphere->SetColor(Color(1.0, 1.0, 0.0));
+
     std::shared_ptr<SDFCapsule> capsule =
         std::make_shared<SDFCapsule>(1, Vector(.5, 0, 0), Vector(.5, 0, 1));
+    capsule->SetColor(Color(1.0, 0.0, 0.0));
+
     std::shared_ptr<SDFTorus> torus = std::make_shared<SDFTorus>(1, .5, Vector(3.5, 0, 0));
+    torus->SetColor(Color(0.0, 1.0, 0.0));
+
     std::shared_ptr<SDFBox> box = std::make_shared<SDFBox>(1, 1.5, 1.5, Vector(-4.5, 0, 0));
+    box->SetColor(Color(0.0, 0.0, 1.0));
 
     std::shared_ptr<ImplicitUnion> union1 = std::make_shared<ImplicitUnion>(sphere, capsule);
     std::shared_ptr<ImplicitUnion> union2 = std::make_shared<ImplicitUnion>(union1, torus);
