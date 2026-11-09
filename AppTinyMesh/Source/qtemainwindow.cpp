@@ -255,11 +255,15 @@ void MainWindow::ShowSDFExample()
     std::shared_ptr<SDFBox> box = std::make_shared<SDFBox>(1, 1.5, 1.5, Vector(-4.5, 0, 0));
     box->SetColor(Color(0.0, 0.0, 1.0));
 
+    std::shared_ptr<SDFEllipsoid> ellipsoid = std::make_shared<SDFEllipsoid>(2, 1, 1, Vector(0, 0, -2.5));
+    ellipsoid->SetColor(Color(1.0, 0.0, 1.0));
+
     std::shared_ptr<ImplicitUnion> union1 = std::make_shared<ImplicitUnion>(sphere, capsule);
     std::shared_ptr<ImplicitUnion> union2 = std::make_shared<ImplicitUnion>(union1, torus);
     std::shared_ptr<ImplicitUnion> union3 = std::make_shared<ImplicitUnion>(union2, box);
+    std::shared_ptr<ImplicitUnion> union4 = std::make_shared<ImplicitUnion>(union3, ellipsoid);
 
-    std::shared_ptr<ImplicitNode> root = union3;
+    std::shared_ptr<ImplicitNode> root = union4;
     tree.SetRoot(root);
     tree.Polygonize(150, implicitMesh, Box(10.0));
 

@@ -25,7 +25,11 @@ double SDFTorus::Value(const Vector &p) const
 
 double SDFEllipsoid::Value(const Vector &p) const
 {
-    return 0.0;
+    double first = ( (m_center[0] - p[0]) * (m_center[0] - p[0]) ) / (m_xSize * m_xSize);
+    double second = ( (m_center[1] - p[1]) * (m_center[1] - p[1]) )/ (m_ySize * m_ySize);
+    double third = ( (m_center[2] - p[2]) * (m_center[2] - p[2]) ) / (m_zSize * m_zSize);
+
+    return first + second + third - 1;
 }
 
 double SDFBox::Value(const Vector &p) const
