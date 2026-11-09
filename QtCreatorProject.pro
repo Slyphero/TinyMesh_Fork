@@ -2,7 +2,7 @@ QT += core gui opengl
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 5): QT += openglwidgets
 
-CONFIG += c++11
+CONFIG += c++7
 
 INCLUDEPATH += AppTinyMesh/Include
 INCLUDEPATH += $$(GLEW_DIR)

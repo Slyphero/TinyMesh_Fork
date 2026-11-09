@@ -63,10 +63,10 @@ bool PotentialSphere::Inside(const Vector &p) const
 
 double PotentialSphere::Value(const Vector &p) const
 {
-    if (!(Inside(p)))
-    {
-        return 0;
-    }
+    // if (!(Inside(p)))
+    // {
+    //     return 0;
+    // }
 
     double squaredDistance = SquaredNorm(p - m_center);
     double ratio = (squaredDistance * m_inverseSquaredRadius);
@@ -100,10 +100,10 @@ bool PotentialCapsule::Inside(const Vector &p) const
 
 double PotentialCapsule::Value(const Vector &p) const
 {
-    if (!(Inside(p)))
-    {
-        return 0.0;
-    }
+    // if (!(Inside(p)))
+    // {
+    //     return 0.0;
+    // }
 
     Vector p1p2 = m_p2 - m_p1;
     Vector p2p1 = m_p1 - m_p2;

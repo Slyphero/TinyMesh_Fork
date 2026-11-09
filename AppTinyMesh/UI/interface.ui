@@ -197,6 +197,19 @@ p, li { white-space: pre-wrap; }
         <string>ShowOperators</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="benchmark">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>260</y>
+         <width>81</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Benchmark</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>

@@ -2,6 +2,8 @@
 #define __Qte__
 
 #include <QtWidgets/qmainwindow.h>
+#include <chrono>
+#include <random>
 
 #include "meshcolor.h"
 #include "realtime.h"
@@ -39,6 +41,8 @@ class MainWindow : public QMainWindow
     void BlobCapsuleExample();
     void ShowSDFExample();
     void ShowOperatorsExample();
+
+    void Benchmark();
 
     void ResetCamera();
     void UpdateMaterial();

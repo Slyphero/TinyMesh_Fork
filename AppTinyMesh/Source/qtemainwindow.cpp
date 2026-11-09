@@ -1,3 +1,5 @@
+
+
 #include "implicits.h"
 #include "qte.h"
 #include "ui_interface.h"
@@ -37,6 +39,8 @@ void MainWindow::CreateActions()
     CREATE_SCENE(blobCapsule, BlobCapsuleExample);
     CREATE_SCENE(showSDF, ShowSDFExample);
     CREATE_SCENE(showOperators, ShowOperatorsExample);
+
+    CREATE_SCENE(benchmark, Benchmark);
 
     CREATE_SCENE(resetcameraButton, ResetCamera);
     CREATE_SCENE(wireframe, UpdateMaterial);
@@ -320,6 +324,88 @@ void MainWindow::ShowOperatorsExample()
 
     meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
     UpdateGeometry();
+}
+
+static volatile double g_sink = 0.0;
+
+static double BenchmarkNode(const ImplicitNode &node,
+                            const std::vector<Vector> &points,
+                            size_t count,
+                            int repeats = 5)
+{
+    const size_t mask = points.size() - 1;
+    double best = 1e30;
+
+    for (int r = 0; r < repeats; r++)
+    {
+        double sink = 0.0;
+        auto start = std::chrono::steady_clock::now();
+
+        for (size_t i = 0; i < count; i++)
+        {
+            sink += node.Value(points[i & mask]);
+        }
+
+        auto end = std::chrono::steady_clock::now();
+        g_sink = sink;
+
+        double ms = std::chrono::duration<double, std::milli>(end - start).count();
+        if (ms < best)
+        {
+            best = ms;
+        }
+    }
+
+    return best;
+}
+
+void MainWindow::Benchmark()
+{
+    std::mt19937 gen(42);
+    std::uniform_real_distribution<double> dist(-5.0, 5.0);
+    std::vector<Vector> points(1 << 16);
+
+    for (Vector &p : points)
+    {
+        p = Vector(dist(gen), dist(gen), dist(gen));
+    }
+
+    const size_t count = 1e8;
+
+    std::vector< std::pair<std::string, std::shared_ptr<ImplicitNode>> > nodes;
+
+    auto sphere = std::make_shared<SDFSphere>(1.0, Vector(0, 0, 0));
+    auto capsule = std::make_shared<SDFCapsule>(1.0, Vector(-1, 0, 0), Vector(1, 0, 0));
+    auto torus = std::make_shared<SDFTorus>(2.0, 0.5, Vector(0, 0, 0));
+    auto box = std::make_shared<SDFBox>(1.0, 2.0, 1.0, Vector(0, 0, 0));
+    auto ellipsoid = std::make_shared<SDFEllipsoid>(1.0, 2.0, 1.0, Vector(0.0, 0.0, 0.0));
+
+    nodes.push_back({"Sphere", sphere});
+    nodes.push_back({"Capsule", capsule});
+    nodes.push_back({"Torus", torus});
+    nodes.push_back({"Box", box});
+    nodes.push_back({"Ellipsoid", ellipsoid});
+    nodes.push_back({"Union(sphere, box)", std::make_shared<ImplicitUnion>(sphere, box)});
+    nodes.push_back({"SmoothUnion(sphere, box)",
+                    std::make_shared<ImplicitSmoothUnion>(sphere, box, 0.5)});
+
+    auto blob = std::make_shared<ImplicitBlob>(0.5);
+
+    for (int i = 0; i < 10; i++)
+    {
+        blob->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(i * 0.5 - 2.5, 0, 0)));
+    }
+
+    nodes.push_back({"Blob (10 potentiels)", blob});
+
+    std::cout << "Benchmark " << count << " evaluations de Value \n";
+    for (const auto& [name, node] : nodes)
+    {
+        BenchmarkNode(*node, points, count / 10, 1);
+        double ms = BenchmarkNode(*node, points, count);
+        std::cout << name << " : " << ms << " ms ("
+                  << (ms * 1e6 / count)  << " ns/appel)" << std::endl;
+    }
 }
 
 void MainWindow::UpdateGeometry()
