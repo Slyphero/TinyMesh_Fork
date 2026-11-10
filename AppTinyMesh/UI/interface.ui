@@ -210,6 +210,19 @@ p, li { white-space: pre-wrap; }
         <string>Benchmark</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="meshQuality">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>260</y>
+         <width>86</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Qualite Mesh</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>

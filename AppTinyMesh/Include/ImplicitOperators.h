@@ -55,4 +55,41 @@ class ImplicitSmoothUnion : public ImplicitBinaryOperator
   protected:
     double m_r;
 };
+
+class ImplicitUnaryOperator : public ImplicitNode
+{
+  public:
+    ImplicitUnaryOperator(std::shared_ptr<ImplicitNode> node) : m_node(node)
+    {
+    }
+  protected:
+    std::shared_ptr<ImplicitNode> m_node;
+};
+
+class ImplicitTranslation : public ImplicitUnaryOperator
+{
+  public:
+    ImplicitTranslation(std::shared_ptr<ImplicitNode> node, Vector t) :
+        ImplicitUnaryOperator(std::move(node)), m_t(t)
+    {
+    }
+    double Value(const Vector &p) const override;
+    Color ColorAt(const Vector &p) const override;
+  protected:
+    Vector m_t;
+};
+
+class ImplicitScale : public ImplicitUnaryOperator
+{
+  public:
+    ImplicitScale(std::shared_ptr<ImplicitNode> node, double lambda) :
+        ImplicitUnaryOperator(std::move(node)), m_lambda(lambda)
+    {
+    }
+    double Value(const Vector &p) const override;
+    Color ColorAt(const Vector &p) const override;
+  protected:
+    double m_lambda;
+};
+
 #endif // IMPLICITOPERATORS_H

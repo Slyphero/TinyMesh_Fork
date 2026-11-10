@@ -43,6 +43,7 @@ class MainWindow : public QMainWindow
     void ShowOperatorsExample();
 
     void Benchmark();
+    void MeshQuality();
 
     void ResetCamera();
     void UpdateMaterial();

@@ -41,6 +41,7 @@ void MainWindow::CreateActions()
     CREATE_SCENE(showOperators, ShowOperatorsExample);
 
     CREATE_SCENE(benchmark, Benchmark);
+    CREATE_SCENE(meshQuality, MeshQuality);
 
     CREATE_SCENE(resetcameraButton, ResetCamera);
     CREATE_SCENE(wireframe, UpdateMaterial);
@@ -137,7 +138,7 @@ void MainWindow::TreeExample()
     std::shared_ptr<ImplicitNode> union4 =
         std::make_shared<ImplicitSmoothUnion>(union3, sdfSphere2, 1.50);
 
-    std::shared_ptr<ImplicitNode> root = union4;
+    std::shared_ptr<ImplicitNode> root = std::make_shared<ImplicitScale>(union4, 0.75);
     tree.SetRoot(root);
 
     tree.Polygonize(150, implicitMesh, Box(10.0));
@@ -181,11 +182,6 @@ void MainWindow::BlobSphereExample()
     blob->AddPotential(pot4);
 
     std::shared_ptr<ImplicitNode> root = blob;
-    connect(uiw->resetcameraButton, SIGNAL(clicked()), this, SLOT(ResetCamera()));
-    connect(uiw->wireframe, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
-    connect(uiw->radioShadingButton_1, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
-    connect(uiw->radioShadingButton_2, SIGNAL(clicked()), this, SLOT(UpdateMaterial()));
-
     tree.SetRoot(root);
 
     tree.Polygonize(150, implicitMesh, Box(10.0));
@@ -405,6 +401,117 @@ void MainWindow::Benchmark()
         double ms = BenchmarkNode(*node, points, count);
         std::cout << name << " : " << ms << " ms ("
                   << (ms * 1e6 / count)  << " ns/appel)" << std::endl;
+    }
+}
+
+static double TriangleAspect(const Vector &a, const Vector &b, const Vector &c)
+{
+    double la = Norm(b - c);
+    double lb = Norm(a - c);
+    double lc = Norm(a - b);
+
+    double abc = la * lb * lc;
+
+    if (abc < 1e-18)
+    {
+        return 0.0;
+    }
+
+    double s = (la + lb + lc) / 2.0;
+    double u = (s - la) * (s - lb) * (s - lc);
+
+    if (u < 0.0)
+    {
+        u = 0.0;
+    }
+
+    return 8 * u / abc;
+}
+
+struct MeshStats
+{
+    size_t vertices = 0;
+    size_t triangles = 0;
+
+    double rhoMean = 0;
+    double rhoMin = 1;
+    double badRatio = 0; // Part des triangles avec rho < 0.3
+
+    double errorMean = 0;
+    double errorMax = 0;
+};
+
+static MeshStats ComputeStats(const Mesh &mesh, const ImplicitNode &node)
+{
+    MeshStats s;
+    s.vertices = mesh.Vertexes();
+    s.triangles = mesh.Triangles();
+
+    const std::vector<int> &idx = mesh.VertexIndexes();
+
+    size_t bad = 0;
+    for (size_t i = 0; i + 2 < idx.size(); i += 3)
+    {
+        const Vector &a = mesh.Vertex(idx[i]);
+        const Vector &b = mesh.Vertex(idx[i + 1]);
+        const Vector &c = mesh.Vertex(idx[i + 2]);
+
+        double rho = TriangleAspect(a, b, c);
+        s.rhoMean += rho;
+        s.rhoMin = Math::Min(rho, s.rhoMin);
+
+        Vector g = (a + b + c) / 3.0;
+        double e = std::abs(node.Value(g));
+        s.errorMean += e;
+        s.errorMax = Math::Max(s.errorMax, e);
+
+        if (rho < 0.3)
+        {
+            bad++;
+        }
+    }
+
+    s.rhoMean /= s.triangles;
+    s.errorMean /= s.triangles;
+    s.badRatio = double(bad) / s.triangles;
+
+    return s;
+}
+
+void MainWindow::MeshQuality()
+{
+    std::vector< std::pair<std::string, std::shared_ptr<ImplicitNode>> > shapes;
+
+    shapes.push_back({"Sphere",                std::make_shared<SDFSphere>(1.0, Vector(0, 0, 0))});
+    shapes.push_back({"Capsule",               std::make_shared<SDFCapsule>(1.0, Vector(-1, 0, 0), Vector(1, 0, 0))});
+    shapes.push_back({"Torus",                 std::make_shared<SDFTorus>(2.0, 0.5, Vector(0, 0, 0))});
+    shapes.push_back({"Box",                   std::make_shared<SDFBox>(1.0, 1.0, 1.0, Vector(0, 0, 0))});
+    shapes.push_back({"Ellipsoid (pas 1-Lip)", std::make_shared<SDFEllipsoid>(1.0, 2.0, 1.0, Vector(0.0, 0.0, 0.0))});
+
+    std::cout << "Forme, Résolution, Sommets, Triangles, $rho$-moyen, $rho$-minimum, Ratio mauvais, Erreur Moyenne, Erreur Maximale, Temps de calcul (ms)" << std::endl;
+
+    const int resolutions[] = {64, 128, 256};
+
+    for (const auto& [name, node] : shapes)
+    {
+        for (int res : resolutions)
+        {
+            AnalyticTree tree;
+            tree.SetRoot(node);
+
+            Mesh mesh;
+
+            auto start = std::chrono::steady_clock::now();
+            tree.Polygonize(res, mesh, Box(10));
+            auto end = std::chrono::steady_clock::now();
+
+            double ms = std::chrono::duration<double, std::milli>(end - start).count();
+
+            MeshStats s = ComputeStats(mesh, *node);
+            std::cout << name << ", " << res << ", " << s.vertices << ", " << s.triangles << ", "
+                      << s.rhoMean << ", " << s.rhoMin << ", " << s.badRatio << ", "
+                      << s.errorMean << ", " << s.errorMax << ", " << ms << std::endl;
+        }
     }
 }
 

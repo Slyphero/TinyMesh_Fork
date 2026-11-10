@@ -45,3 +45,23 @@ Color ImplicitSmoothUnion::ColorAt(const Vector &p) const
 {
     return m_left->Value(p) < m_right->Value(p) ? m_left->ColorAt(p) : m_right->ColorAt(p);
 }
+
+double ImplicitTranslation::Value(const Vector &p) const
+{
+    return m_node->Value(p - m_t);
+}
+
+Color ImplicitTranslation::ColorAt(const Vector &p) const
+{
+    return m_node->ColorAt(p);
+}
+
+double ImplicitScale::Value(const Vector &p) const
+{
+    return m_node->Value(p / m_lambda);
+}
+
+Color ImplicitScale::ColorAt(const Vector &p) const
+{
+    return m_node->ColorAt(p);
+}
