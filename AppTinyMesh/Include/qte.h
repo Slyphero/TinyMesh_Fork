@@ -41,6 +41,7 @@ class MainWindow : public QMainWindow
     void BlobCapsuleExample();
     void ShowSDFExample();
     void ShowOperatorsExample();
+    void ShowInfiniteBlobSphere();
 
     void Benchmark();
     void MeshQuality();

@@ -80,6 +80,31 @@ double PotentialSphere::Value(const Vector &p) const
     return val * val;
 }
 
+bool PotentialInfiniteSphere::Inside(const Vector &p) const
+{
+    Vector radiusVec = Vector(m_radius, m_radius, m_radius);
+    Vector a = m_center - radiusVec;
+    Vector b = m_center + radiusVec;
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (!(a[i] <= p[i] && p[i] <= b[i]))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+double PotentialInfiniteSphere::Value(const Vector &p) const
+{
+    double squaredDistance = SquaredNorm(p - m_center);
+    double squaredSigma = m_sigma * m_sigma;
+
+    return std::exp(-squaredDistance / squaredSigma);
+}
+
 // Potential Capsule
 bool PotentialCapsule::Inside(const Vector &p) const
 {
@@ -133,4 +158,21 @@ double PotentialCapsule::Value(const Vector &p) const
         return 0;
 
     return (1 - ratio) * (1 - ratio);
+}
+
+bool PotentialInfiniteCapsule::Inside(const Vector &p) const
+{
+    Vector radiusVec = Vector(m_radius, m_radius, m_radius);
+    Vector a = m_p1 - radiusVec;
+    Vector b = m_p2 + radiusVec;
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (!(a[i] <= p[i] && p[i] <= b[i]))
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

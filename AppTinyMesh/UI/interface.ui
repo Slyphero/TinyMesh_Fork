@@ -188,7 +188,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>210</y>
+         <y>300</y>
          <width>101</width>
          <height>26</height>
         </rect>
@@ -201,7 +201,7 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>260</y>
+         <y>350</y>
          <width>81</width>
          <height>26</height>
         </rect>
@@ -214,13 +214,26 @@ p, li { white-space: pre-wrap; }
        <property name="geometry">
         <rect>
          <x>130</x>
-         <y>260</y>
+         <y>350</y>
          <width>86</width>
          <height>26</height>
         </rect>
        </property>
        <property name="text">
         <string>Qualite Mesh</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="infiniteBlobSphere">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>210</y>
+         <width>131</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Infinite BlobSphere</string>
        </property>
       </widget>
      </widget>

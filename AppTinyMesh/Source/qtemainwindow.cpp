@@ -39,6 +39,7 @@ void MainWindow::CreateActions()
     CREATE_SCENE(blobCapsule, BlobCapsuleExample);
     CREATE_SCENE(showSDF, ShowSDFExample);
     CREATE_SCENE(showOperators, ShowOperatorsExample);
+    CREATE_SCENE(infiniteBlobSphere, ShowInfiniteBlobSphere);
 
     CREATE_SCENE(benchmark, Benchmark);
     CREATE_SCENE(meshQuality, MeshQuality);
@@ -322,6 +323,40 @@ void MainWindow::ShowOperatorsExample()
     UpdateGeometry();
 }
 
+void MainWindow::ShowInfiniteBlobSphere()
+{
+    AnalyticTree tree;
+    Mesh implicitMesh;
+
+    double threshold = 0.5;
+    double sigma = 1.0;
+
+    auto blob = std::make_shared<ImplicitBlob>(threshold);
+
+    auto pot1 = std::make_shared<PotentialInfiniteSphere>(1.0, Vector(-1.0, 0.0, 0.0), sigma);
+    pot1->SetColor(Color(1.0, 0.0, 0.0));
+    blob->AddPotential(pot1);
+
+    auto pot2 = std::make_shared<PotentialInfiniteSphere>(1.0, Vector(1.0, 0.0, 0.0), sigma);
+    pot2->SetColor(Color(0.0, 1.0, 0.0));
+    blob->AddPotential(pot2);
+
+    auto root = blob;
+    tree.SetRoot(root);
+    tree.Polygonize(150, implicitMesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(implicitMesh.Vertexes());
+
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = root->ColorAt(implicitMesh.Vertex(i));
+    }
+
+    meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+    UpdateGeometry();
+}
+
 static volatile double g_sink = 0.0;
 
 static double BenchmarkNode(const ImplicitNode &node,
@@ -386,13 +421,22 @@ void MainWindow::Benchmark()
                     std::make_shared<ImplicitSmoothUnion>(sphere, box, 0.5)});
 
     auto blob = std::make_shared<ImplicitBlob>(0.5);
+    auto infBlob = std::make_shared<ImplicitBlob>(0.5);
+    auto infBlob2 = std::make_shared<ImplicitBlob>(0.5);
+    auto infBlob3 = std::make_shared<ImplicitBlob>(0.5);
 
     for (int i = 0; i < 10; i++)
     {
         blob->AddPotential(std::make_shared<PotentialSphere>(1.0, Vector(i * 0.5 - 2.5, 0, 0)));
+        infBlob->AddPotential(std::make_shared<PotentialInfiniteSphere>(1.0, Vector(i * 0.5 - 2.5, 0, 0), 1.0));
+        infBlob2->AddPotential(std::make_shared<PotentialInfiniteSphere>(1.0, Vector(i * 0.5 - 2.5, 0, 0), 2.0));
+        infBlob3->AddPotential(std::make_shared<PotentialInfiniteSphere>(1.0, Vector(i * 0.5 - 2.5, 0, 0), .5));
     }
 
-    nodes.push_back({"Blob (10 potentiels)", blob});
+    nodes.push_back({"Blob compact (10 potentiels)", blob});
+    nodes.push_back({"Blob infini (10 potentiels) sigma = 1", infBlob});
+    nodes.push_back({"Blob infini (10 potentiels) sigma = 2", infBlob2});
+    nodes.push_back({"Blob infini (10 potentiels) sigma = 0.5", infBlob3});
 
     std::cout << "Benchmark " << count << " evaluations de Value \n";
     for (const auto& [name, node] : nodes)
