@@ -44,6 +44,8 @@ void MainWindow::CreateActions()
     CREATE_SCENE(benchmark, Benchmark);
     CREATE_SCENE(meshQuality, MeshQuality);
 
+    CREATE_SCENE(tentacle, Tentacle);
+
     CREATE_SCENE(resetcameraButton, ResetCamera);
     CREATE_SCENE(wireframe, UpdateMaterial);
     CREATE_SCENE(radioShadingButton_1, UpdateMaterial);
@@ -302,10 +304,10 @@ void MainWindow::ShowOperatorsExample()
     std::shared_ptr<SDFTorus> torus2 = std::make_shared<SDFTorus>(1, .5, Vector(2, 0, -2.5));
     torus2->SetColor(Color(1.0, 0.0, 1.0));
 
-    std::shared_ptr<ImplicitNode> union1 = std::make_shared<ImplicitSmoothUnion>(sphere, box, 1.50);
+    std::shared_ptr<ImplicitNode> union1     = std::make_shared<ImplicitSmoothUnion>(sphere, box, 1.50);
     std::shared_ptr<ImplicitNode> difference = std::make_shared<ImplicitDifference>(union1, capsule);
     std::shared_ptr<ImplicitNode> intersect1 = std::make_shared<ImplicitIntersection>(torus, torus2);
-    std::shared_ptr<ImplicitNode> union2 = std::make_shared<ImplicitUnion>(difference, intersect1);
+    std::shared_ptr<ImplicitNode> union2     = std::make_shared<ImplicitUnion>(difference, intersect1);
 
     std::shared_ptr<ImplicitNode> root = union2;
     tree.SetRoot(root);
@@ -329,19 +331,31 @@ void MainWindow::ShowInfiniteBlobSphere()
     Mesh implicitMesh;
 
     double threshold = 0.5;
-    double sigma = 1.0;
+    double sigmas[3] = {0.5, 1.0, 2.0};
 
-    auto blob = std::make_shared<ImplicitBlob>(threshold);
+    std::shared_ptr<ImplicitBlob> blobs[3] = { std::make_shared<ImplicitBlob>(threshold),
+                                               std::make_shared<ImplicitBlob>(threshold),
+                                               std::make_shared<ImplicitBlob>(threshold) };
 
-    auto pot1 = std::make_shared<PotentialInfiniteSphere>(1.0, Vector(-1.0, 0.0, 0.0), sigma);
-    pot1->SetColor(Color(1.0, 0.0, 0.0));
-    blob->AddPotential(pot1);
+    auto blob  = std::make_shared<ImplicitBlob>(threshold);
+    auto blob2 = std::make_shared<ImplicitBlob>(threshold);
+    auto blob3 = std::make_shared<ImplicitBlob>(threshold);
 
-    auto pot2 = std::make_shared<PotentialInfiniteSphere>(1.0, Vector(1.0, 0.0, 0.0), sigma);
-    pot2->SetColor(Color(0.0, 1.0, 0.0));
-    blob->AddPotential(pot2);
+    for (int i = 0; i < 3; i++)
+    {
+        auto pot1 = std::make_shared<PotentialInfiniteSphere>(1.0, Vector(-1, -1.0 + 3.0 * i, 0.0), sigmas[i]);
+        pot1->SetColor(Color(1.0, 0.0, 0.0));
+        blobs[i]->AddPotential(pot1);
 
-    auto root = blob;
+        auto pot2 = std::make_shared<PotentialInfiniteSphere>(1.0, Vector(1, -1.0 + 3.0 * i, 0.0), sigmas[i]);
+        pot2->SetColor(Color(0.0, 0.0, 1.0));
+        blobs[i]->AddPotential(pot2);
+    }
+
+    auto union1 = std::make_shared<ImplicitUnion>(blobs[0], blobs[1]);
+    auto union2 = std::make_shared<ImplicitUnion>(union1, blobs[2]);
+
+    auto root = union2;
     tree.SetRoot(root);
     tree.Polygonize(150, implicitMesh, Box(10.0));
 
@@ -433,9 +447,9 @@ void MainWindow::Benchmark()
         infBlob3->AddPotential(std::make_shared<PotentialInfiniteSphere>(1.0, Vector(i * 0.5 - 2.5, 0, 0), .5));
     }
 
-    nodes.push_back({"Blob compact (10 potentiels)", blob});
-    nodes.push_back({"Blob infini (10 potentiels) sigma = 1", infBlob});
-    nodes.push_back({"Blob infini (10 potentiels) sigma = 2", infBlob2});
+    nodes.push_back({"Blob compact (10 potentiels)",            blob});
+    nodes.push_back({"Blob infini (10 potentiels) sigma = 1",   infBlob});
+    nodes.push_back({"Blob infini (10 potentiels) sigma = 2",   infBlob2});
     nodes.push_back({"Blob infini (10 potentiels) sigma = 0.5", infBlob3});
 
     std::cout << "Benchmark " << count << " evaluations de Value \n";
@@ -515,9 +529,9 @@ static MeshStats ComputeStats(const Mesh &mesh, const ImplicitNode &node)
         }
     }
 
-    s.rhoMean /= s.triangles;
+    s.rhoMean   /= s.triangles;
     s.errorMean /= s.triangles;
-    s.badRatio = double(bad) / s.triangles;
+    s.badRatio   = double(bad) / s.triangles;
 
     return s;
 }
@@ -532,7 +546,9 @@ void MainWindow::MeshQuality()
     shapes.push_back({"Box",                   std::make_shared<SDFBox>(1.0, 1.0, 1.0, Vector(0, 0, 0))});
     shapes.push_back({"Ellipsoid (pas 1-Lip)", std::make_shared<SDFEllipsoid>(1.0, 2.0, 1.0, Vector(0.0, 0.0, 0.0))});
 
-    std::cout << "Forme, Résolution, Sommets, Triangles, $rho$-moyen, $rho$-minimum, Ratio mauvais, Erreur Moyenne, Erreur Maximale, Temps de calcul (ms)" << std::endl;
+    std::cout << "Forme, Résolution, Sommets, Triangles, "
+              << "$rho$-moyen, $rho$-minimum, Ratio mauvais, "
+              << "Erreur Moyenne, Erreur Maximale, Temps de calcul (ms)" << std::endl;
 
     const int resolutions[] = {64, 128, 256};
 
@@ -554,9 +570,65 @@ void MainWindow::MeshQuality()
             MeshStats s = ComputeStats(mesh, *node);
             std::cout << name << ", " << res << ", " << s.vertices << ", " << s.triangles << ", "
                       << s.rhoMean << ", " << s.rhoMin << ", " << s.badRatio << ", "
-                      << s.errorMean << ", " << s.errorMax << ", " << ms << std::endl;
+                      << s.errorMean << ", " << s.errorMax << ", "
+                      << ms <<  std::endl;
         }
     }
+}
+
+void MainWindow::Tentacle()
+{
+    AnalyticTree tree;
+    Mesh mesh;
+
+    auto capsule1 = std::make_shared<PotentialCapsule>(0.4, Vector(0, 0, 0),     Vector(0, 2, 0));
+    capsule1->SetColor(Color(1.0, 0.0, 0.0));
+    auto capsule2 = std::make_shared<PotentialCapsule>(0.3, Vector(0, 2, 0),     Vector(1.8, 3.2, 0));
+    capsule2->SetColor(Color(1.0, 0.0, 0.0));
+    auto capsule3 = std::make_shared<PotentialCapsule>(0.2, Vector(1.8, 3.2, 0), Vector(0.7, 1.2, 0));
+    capsule3->SetColor(Color(1.0, 0.0, 0.0));
+
+    auto blob = std::make_shared<ImplicitBlob>(0.5);
+    blob->AddPotential(capsule1);
+    blob->AddPotential(capsule2);
+    blob->AddPotential(capsule3);
+
+    auto capsule4 = std::make_shared<SDFCapsule>(0.4, Vector(0, 0, -2),     Vector(0, 2, -2));
+    capsule4->SetColor(Color(0.0, 1.0, 0.0));
+    auto capsule5 = std::make_shared<SDFCapsule>(0.3, Vector(0, 2, -2),     Vector(1.8, 3.2, -2));
+    capsule5->SetColor(Color(0.0, 1.0, 0.0));
+    auto capsule6 = std::make_shared<SDFCapsule>(0.2, Vector(1.8, 3.2, -2), Vector(0.7, 1.2, -2));
+    capsule6->SetColor(Color(0.0, 1.0, 0.0));
+
+    auto union1 = std::make_shared<ImplicitSmoothUnion>(capsule4, capsule5, 0.3);
+    auto union2 = std::make_shared<ImplicitSmoothUnion>(union1,   capsule6, 0.3);
+    auto union3 = std::make_shared<ImplicitUnion>(union2, blob);
+
+    auto capsule7 = std::make_shared<SDFCapsule>(0.4, Vector(0, 0, 2),     Vector(0, 2, 2));
+    capsule7->SetColor(Color(0.0, 0.0, 1.0));
+    auto capsule8 = std::make_shared<SDFCapsule>(0.3, Vector(0, 2, 2),     Vector(1.8, 3.2, 2));
+    capsule8->SetColor(Color(0.0, 0.0, 1.0));
+    auto capsule9 = std::make_shared<SDFCapsule>(0.2, Vector(1.8, 3.2, 2), Vector(0.7, 1.2, 2));
+    capsule9->SetColor(Color(0.0, 0.0, 1.0));
+
+    auto union4 = std::make_shared<ImplicitSmoothUnion>(capsule7, capsule8, 1.2);
+    auto union5 = std::make_shared<ImplicitSmoothUnion>(union4,   capsule9, 1.2);
+    auto union6 = std::make_shared<ImplicitUnion>(union5, union3);
+
+    auto root = union6;
+    tree.SetRoot(root);
+    tree.Polygonize(150, mesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(mesh.Vertexes());
+
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = root->ColorAt(mesh.Vertex(i));
+    }
+
+    meshColor = MeshColor(mesh, cols, mesh.VertexIndexes());
+    UpdateGeometry();
 }
 
 void MainWindow::UpdateGeometry()

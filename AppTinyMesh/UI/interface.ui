@@ -236,6 +236,19 @@ p, li { white-space: pre-wrap; }
         <string>Infinite BlobSphere</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="tentacle">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>420</y>
+         <width>86</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Tentacle</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>

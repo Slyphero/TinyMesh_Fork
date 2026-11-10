@@ -46,6 +46,8 @@ class MainWindow : public QMainWindow
     void Benchmark();
     void MeshQuality();
 
+    void Tentacle();
+
     void ResetCamera();
     void UpdateMaterial();
 };
