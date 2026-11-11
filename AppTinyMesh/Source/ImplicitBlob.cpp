@@ -43,6 +43,21 @@ Color ImplicitBlob::ColorAt(const Vector &p) const
     return Color(r / sum, g / sum, b / sum);
 }
 
+double ImplicitBlob::Lipschitz() const
+{
+    double total = 0.0;
+    for (const std::shared_ptr<Potential> &p : m_potentials)
+    {
+        total += p->Lipschitz();
+    }
+    return total;
+}
+
+double Potential::Lipschitz() const
+{
+    return 8 / (3 * std::sqrt(3) * m_radius);
+}
+
 // Potential Sphere
 bool PotentialSphere::Inside(const Vector &p) const
 {

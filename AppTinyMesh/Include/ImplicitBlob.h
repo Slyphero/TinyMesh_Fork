@@ -10,6 +10,7 @@
 class Potential // Purement virtuelle
 {
   public:
+    explicit Potential(double radius = 0.0) : m_radius(radius) {}
     virtual double Value(const Vector &p) const = 0;
     virtual bool Inside(const Vector &p) const = 0;
     virtual ~Potential() = default;
@@ -23,7 +24,10 @@ class Potential // Purement virtuelle
         return m_color;
     }
 
+    double Lipschitz() const;
+
   protected:
+    double m_radius;
     Color m_color = Color(0.5, 0.5, 0.5);
 };
 
@@ -31,7 +35,7 @@ class PotentialSphere : public Potential
 {
   public:
     PotentialSphere(double radius, const Vector &center)
-        : m_radius(radius), m_center(center), m_inverseSquaredRadius(1.0 / (m_radius * m_radius))
+        : Potential(radius), m_center(center), m_inverseSquaredRadius(1.0 / (radius * radius))
     {
     }
 
@@ -39,7 +43,6 @@ class PotentialSphere : public Potential
     bool Inside(const Vector &p) const override;
 
   private:
-    double m_radius;
     Vector m_center;
     double m_inverseSquaredRadius;
 };
@@ -48,14 +51,13 @@ class PotentialInfiniteSphere : public Potential
 {
   public:
     PotentialInfiniteSphere(double radius, const Vector &center, double sigma) :
-        m_radius(radius), m_center(center), m_sigma(sigma)
+        Potential(radius), m_center(center), m_sigma(sigma)
     {
     }
 
     double Value(const Vector &p) const override;
     bool Inside(const Vector &p) const override;
   protected:
-    double m_radius;
     Vector m_center;
     double m_sigma;
 };
@@ -64,7 +66,7 @@ class PotentialCapsule : public Potential
 {
   public:
     PotentialCapsule(double radius, const Vector &p1, const Vector &p2)
-        : m_radius(radius), m_p1(p1), m_p2(p2), m_inverseSquaredRadius(1.0 / (radius * radius))
+        : Potential(radius), m_p1(p1), m_p2(p2), m_inverseSquaredRadius(1.0 / (radius * radius))
     {
     }
 
@@ -72,7 +74,6 @@ class PotentialCapsule : public Potential
     bool Inside(const Vector &p) const override;
 
   private:
-    double m_radius;
     Vector m_p1;
     Vector m_p2;
     double m_inverseSquaredRadius;
@@ -82,14 +83,13 @@ class PotentialInfiniteCapsule : public Potential
 {
   public:
     PotentialInfiniteCapsule(double radius, const Vector &p1, const Vector &p2, double sigma) :
-        m_radius(radius), m_p1(p1), m_p2(p2), m_sigma(sigma)
+        Potential(radius), m_p1(p1), m_p2(p2), m_sigma(sigma)
     {
     }
 
     double Value(const Vector &p) const override;
     bool Inside(const Vector &p) const override;
   protected:
-    double m_radius;
     Vector m_p1;
     Vector m_p2;
     double m_sigma;
@@ -104,6 +104,7 @@ class ImplicitBlob : public ImplicitNode
 
     double Value(const Vector &p) const override;
     void AddPotential(std::shared_ptr<Potential> potential);
+    double Lipschitz() const;
 
     Color ColorAt(const Vector &p) const override;
 

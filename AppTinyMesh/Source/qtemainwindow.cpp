@@ -199,6 +199,8 @@ void MainWindow::BlobSphereExample()
 
     meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
 
+    std::cout << "Lipschitz : " << blob->Lipschitz() << std::endl;
+
     UpdateGeometry();
 }
 
@@ -236,6 +238,8 @@ void MainWindow::BlobCapsuleExample()
     }
 
     meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
+
+    std::cout << "Lipschitz : " << blob->Lipschitz() << std::endl;
 
     UpdateGeometry();
 }
