@@ -92,4 +92,42 @@ class ImplicitScale : public ImplicitUnaryOperator
     double m_lambda;
 };
 
+class ImplicitRotationX : public ImplicitUnaryOperator
+{
+  public:
+    ImplicitRotationX(std::shared_ptr<ImplicitNode> node, double angleDeg) :
+        ImplicitUnaryOperator(std::move(node)), m_angleRad( (angleDeg * M_PI) / 180.0 )
+    {
+    }
+    double Value(const Vector &p) const override;
+    Color ColorAt(const Vector &p) const override;
+  protected:
+    double m_angleRad;
+};
+
+class ImplicitRotationY : public ImplicitUnaryOperator
+{
+  public:
+    ImplicitRotationY(std::shared_ptr<ImplicitNode> node, double angleDeg) :
+        ImplicitUnaryOperator(std::move(node)), m_angleRad( (angleDeg * M_PI) / 180.0 )
+    {
+    }
+    double Value(const Vector &p) const override;
+    Color ColorAt(const Vector &p) const override;
+  protected:
+    double m_angleRad;
+};
+
+class ImplicitRotationZ : public ImplicitUnaryOperator
+{
+  public:
+    ImplicitRotationZ(std::shared_ptr<ImplicitNode> node, double angleDeg) :
+        ImplicitUnaryOperator(std::move(node)), m_angleRad( (angleDeg * M_PI) / 180.0 )
+    {
+    }
+    double Value(const Vector &p) const override;
+    Color ColorAt(const Vector &p) const override;
+  protected:
+    double m_angleRad;
+};
 #endif // IMPLICITOPERATORS_H

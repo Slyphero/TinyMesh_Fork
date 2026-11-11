@@ -261,8 +261,10 @@ void MainWindow::ShowSDFExample()
     std::shared_ptr<SDFEllipsoid> ellipsoid = std::make_shared<SDFEllipsoid>(2, 1, 1, Vector(0, 0, -2.5));
     ellipsoid->SetColor(Color(1.0, 0.0, 1.0));
 
+    std::shared_ptr<ImplicitRotationX> rotTorus = std::make_shared<ImplicitRotationX>(torus, 90);
+
     std::shared_ptr<ImplicitUnion> union1 = std::make_shared<ImplicitUnion>(sphere, capsule);
-    std::shared_ptr<ImplicitUnion> union2 = std::make_shared<ImplicitUnion>(union1, torus);
+    std::shared_ptr<ImplicitUnion> union2 = std::make_shared<ImplicitUnion>(union1, rotTorus);
     std::shared_ptr<ImplicitUnion> union3 = std::make_shared<ImplicitUnion>(union2, box);
     std::shared_ptr<ImplicitUnion> union4 = std::make_shared<ImplicitUnion>(union3, ellipsoid);
 

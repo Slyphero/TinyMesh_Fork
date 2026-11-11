@@ -65,3 +65,51 @@ Color ImplicitScale::ColorAt(const Vector &p) const
 {
     return m_node->ColorAt(p);
 }
+
+double ImplicitRotationX::Value(const Vector &p) const
+{
+    return m_node->Value(Vector(
+        p[0],
+        p[1] * std::cos(m_angleRad) + p[2] * std::sin(m_angleRad),
+        p[2] * std::cos(m_angleRad) - p[1] * std::sin(m_angleRad)
+    ));
+}
+
+double ImplicitRotationY::Value(const Vector &p) const
+{
+    return m_node->Value(Vector(
+        p[0] * std::cos(m_angleRad) + p[2] * std::sin(m_angleRad),
+        p[1],
+        p[2] * std::cos(m_angleRad) - p[0] * std::sin(m_angleRad)
+    ));
+}
+
+double ImplicitRotationZ::Value(const Vector &p) const
+{
+    return m_node->Value(Vector(
+        p[0] * std::cos(m_angleRad) + p[1] * std::sin(m_angleRad),
+        p[1] * std::cos(m_angleRad) - p[0] * std::sin(m_angleRad),
+        p[2]
+    ));
+}
+
+Color ImplicitRotationX::ColorAt(const Vector &p) const
+{
+    return m_node->ColorAt(p);
+}
+
+Color ImplicitRotationY::ColorAt(const Vector &p) const
+{
+    return m_node->ColorAt(p);
+}
+
+Color ImplicitRotationZ::ColorAt(const Vector &p) const
+{
+    return m_node->ColorAt(p);
+}
+
+
+
+
+
+
