@@ -9,7 +9,6 @@
 #include "ImplicitBlob.h"
 #include "ImplicitNode.h"
 #include "ImplicitOperators.h"
-#include "blob.h"
 #include "mesh.h"
 #include "sdf.h"
 
