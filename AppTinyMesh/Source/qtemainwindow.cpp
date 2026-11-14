@@ -508,7 +508,7 @@ void MainWindow::Candle()
 
     auto melting = std::make_shared<ImplicitBlob>(0.4);
 
-    auto meltingCapsule = std::make_shared<PotentialCapsule>(0.5, Vector(offset, 0, 3), Vector(offset, 0, 3.8));
+    auto meltingCapsule = std::make_shared<PotentialCapsule>(0.35, Vector(offset, 0, 3), Vector(offset, 0, 3.8));
     meltingCapsule->SetColor(Color(216.0/255.0, 205.0/255.0, 202.0/255.0));
 
     auto meltingSphere = std::make_shared<PotentialSphere>(0.5, Vector(offset, 0, 3));
