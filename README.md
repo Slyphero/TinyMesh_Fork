@@ -11,7 +11,11 @@ Finally, open the Visual Studio solution files with Visual Studio 2022 Community
 - First, you must install Qt6 (https://www.qt.io/download, use the open source version). Install the gcc compiler only (*Note: other compilers can work too*).
 - Install the following packages
 ```
+# For Ubuntu
 sudo apt-get install g++ libglew-dev freeglut3-dev
+
+# For Fedora
+sudo dnf install g++ glew-devel freeglut-devel
 ```
 Finally, open the QtCreatorProject.pro with QtCreator. Click on configure, then build and execute, everything should work.
 *Note: For other IDE, you will have to use the provided CMakeLists.txt to generate the solution files yourself.*
