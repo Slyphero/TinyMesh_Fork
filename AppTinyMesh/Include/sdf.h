@@ -2,6 +2,7 @@
 #define SDF_H
 
 #include "ImplicitNode.h"
+#include "ImplicitOperators.h"
 #include "mathematics.h"
 
 class SDFPrimitive : public ImplicitNode
@@ -101,6 +102,40 @@ class SDFBox : public SDFPrimitive
     double m_y;
     double m_z;
     Vector m_center;
+};
+
+class SDFPlane : public SDFPrimitive
+{
+  public:
+    SDFPlane(const Vector &n, double h) : m_n(n), m_h(h) {}
+    double Value(const Vector &p) const override;
+  private:
+    Vector m_n;
+    double m_h;
+};
+
+class SDFCylinder : public SDFPrimitive
+{
+  public:
+    SDFCylinder(double radius, const Vector &p1, const Vector &p2) : m_radius(radius), m_p1(p1), m_p2(p2) {}
+    double Value(const Vector &p) const override;
+  private:
+    double m_radius;
+    Vector m_p1;
+    Vector m_p2;
+};
+
+class SDFCone : public SDFPrimitive
+{
+  public:
+    SDFCone(const Vector &center, double height, double halfAngleDeg) :
+        m_center(center), m_height(height), m_halfAngleRad( (halfAngleDeg * M_PI) / 180.0 ) {}
+
+    double Value(const Vector &p) const override;
+  private:
+    Vector m_center;
+    double m_height;
+    double m_halfAngleRad;
 };
 
 #endif // SDF_H

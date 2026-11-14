@@ -43,3 +43,28 @@ double SDFBox::Value(const Vector &p) const
 
     return Norm(outside) + Math::Min(Math::Max(dx, Math::Max(dy, dz)), 0.0);
 }
+
+double SDFPlane::Value(const Vector &p) const
+{
+    return m_n * p + m_h;
+}
+
+double SDFCylinder::Value(const Vector &p) const
+{
+    auto capsule = std::make_shared<SDFCapsule>(m_radius, m_p1, m_p2);
+    Vector n = Normalized(m_p2 - m_p1);
+
+    auto plane1 = std::make_shared<SDFPlane>(-n, m_p1 * n);
+    auto plane2 = std::make_shared<SDFPlane>(n, -(m_p2 * n));
+
+    return Math::Max(capsule->Value(p), Math::Max(plane1->Value(p), plane2->Value(p)));
+}
+
+double SDFCone::Value(const Vector &p) const
+{
+    Vector q = p - m_center;
+    Vector q_xz(q[0], q[2], 0.0);
+
+    Vector v(Norm(q_xz), q[1], 0.0);
+    return Math::Max( v[0] * std::cos(m_halfAngleRad) - v[1] * std::sin(m_halfAngleRad), v[1] - m_height );
+}

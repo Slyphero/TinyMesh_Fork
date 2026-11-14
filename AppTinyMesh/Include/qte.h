@@ -47,6 +47,7 @@ class MainWindow : public QMainWindow
     void MeshQuality();
 
     void Tentacle();
+    void Snowman();
 
     void ResetCamera();
     void UpdateMaterial();

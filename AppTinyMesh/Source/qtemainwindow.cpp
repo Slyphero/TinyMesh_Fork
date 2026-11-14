@@ -45,6 +45,7 @@ void MainWindow::CreateActions()
     CREATE_SCENE(meshQuality, MeshQuality);
 
     CREATE_SCENE(tentacle, Tentacle);
+    CREATE_SCENE(snowman, Snowman);
 
     CREATE_SCENE(resetcameraButton, ResetCamera);
     CREATE_SCENE(wireframe, UpdateMaterial);
@@ -267,14 +268,24 @@ void MainWindow::ShowSDFExample()
 
     std::shared_ptr<ImplicitRotationX> rotTorus = std::make_shared<ImplicitRotationX>(torus, 90);
 
+    std::shared_ptr<SDFCylinder> cylinder = std::make_shared<SDFCylinder>(1, Vector(-3.5, 0, -3), Vector(-3.5, 0, -2));
+    cylinder->SetColor(Color( 249.0/255.0, 77.0/255.0, 35.0/255.0 ));
+
+    std::shared_ptr<SDFCone> cone = std::make_shared<SDFCone>(Vector(0.0, 0.0, 0.0), 2.0, 20.0);
+    cone->SetColor(Color( 43.0/255.0, 251.0/255.0, 242.0/255.0 ));
+    std::shared_ptr<ImplicitRotationX> rotCone = std::make_shared<ImplicitRotationX>(cone, -90.0);
+    std::shared_ptr<ImplicitTranslation> transCone = std::make_shared<ImplicitTranslation>(rotCone, Vector(4, 0, -1.5));
+
     std::shared_ptr<ImplicitUnion> union1 = std::make_shared<ImplicitUnion>(sphere, capsule);
     std::shared_ptr<ImplicitUnion> union2 = std::make_shared<ImplicitUnion>(union1, rotTorus);
     std::shared_ptr<ImplicitUnion> union3 = std::make_shared<ImplicitUnion>(union2, box);
     std::shared_ptr<ImplicitUnion> union4 = std::make_shared<ImplicitUnion>(union3, ellipsoid);
+    std::shared_ptr<ImplicitUnion> union5 = std::make_shared<ImplicitUnion>(union4, cylinder);
+    std::shared_ptr<ImplicitUnion> union6 = std::make_shared<ImplicitUnion>(union5, transCone);
 
-    std::shared_ptr<ImplicitNode> root = union4;
+    std::shared_ptr<ImplicitNode> root = union6;
     tree.SetRoot(root);
-    tree.Polygonize(150, implicitMesh, Box(10.0));
+    tree.Polygonize(256, implicitMesh, Box(20.0));
 
     std::vector<Color> cols;
     cols.resize(implicitMesh.Vertexes());
@@ -285,7 +296,6 @@ void MainWindow::ShowSDFExample()
     }
 
     meshColor = MeshColor(implicitMesh, cols, implicitMesh.VertexIndexes());
-
     UpdateGeometry();
 }
 
@@ -377,6 +387,94 @@ void MainWindow::ShowInfiniteBlobSphere()
     UpdateGeometry();
 }
 
+void MainWindow::Tentacle()
+{
+    AnalyticTree tree;
+    Mesh mesh;
+
+    auto capsule1 = std::make_shared<PotentialCapsule>(0.4, Vector(0, 0, 0),     Vector(0, 2, 0));
+    capsule1->SetColor(Color(1.0, 0.0, 0.0));
+    auto capsule2 = std::make_shared<PotentialCapsule>(0.3, Vector(0, 2, 0),     Vector(1.8, 3.2, 0));
+    capsule2->SetColor(Color(1.0, 0.0, 0.0));
+    auto capsule3 = std::make_shared<PotentialCapsule>(0.2, Vector(1.8, 3.2, 0), Vector(0.7, 1.2, 0));
+    capsule3->SetColor(Color(1.0, 0.0, 0.0));
+
+    auto blob = std::make_shared<ImplicitBlob>(0.5);
+    blob->AddPotential(capsule1);
+    blob->AddPotential(capsule2);
+    blob->AddPotential(capsule3);
+
+    auto capsule4 = std::make_shared<SDFCapsule>(0.4, Vector(0, 0, -2),     Vector(0, 2, -2));
+    capsule4->SetColor(Color(0.0, 1.0, 0.0));
+    auto capsule5 = std::make_shared<SDFCapsule>(0.3, Vector(0, 2, -2),     Vector(1.8, 3.2, -2));
+    capsule5->SetColor(Color(0.0, 1.0, 0.0));
+    auto capsule6 = std::make_shared<SDFCapsule>(0.2, Vector(1.8, 3.2, -2), Vector(0.7, 1.2, -2));
+    capsule6->SetColor(Color(0.0, 1.0, 0.0));
+
+    auto union1 = std::make_shared<ImplicitSmoothUnion>(capsule4, capsule5, 0.3);
+    auto union2 = std::make_shared<ImplicitSmoothUnion>(union1,   capsule6, 0.3);
+    auto union3 = std::make_shared<ImplicitUnion>(union2, blob);
+
+    auto capsule7 = std::make_shared<SDFCapsule>(0.4, Vector(0, 0, 2),     Vector(0, 2, 2));
+    capsule7->SetColor(Color(0.0, 0.0, 1.0));
+    auto capsule8 = std::make_shared<SDFCapsule>(0.3, Vector(0, 2, 2),     Vector(1.8, 3.2, 2));
+    capsule8->SetColor(Color(0.0, 0.0, 1.0));
+    auto capsule9 = std::make_shared<SDFCapsule>(0.2, Vector(1.8, 3.2, 2), Vector(0.7, 1.2, 2));
+    capsule9->SetColor(Color(0.0, 0.0, 1.0));
+
+    auto union4 = std::make_shared<ImplicitSmoothUnion>(capsule7, capsule8, 1.2);
+    auto union5 = std::make_shared<ImplicitSmoothUnion>(union4,   capsule9, 1.2);
+    auto union6 = std::make_shared<ImplicitUnion>(union5, union3);
+
+    auto root = union6;
+    tree.SetRoot(root);
+    tree.Polygonize(150, mesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(mesh.Vertexes());
+
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = root->ColorAt(mesh.Vertex(i));
+    }
+
+    meshColor = MeshColor(mesh, cols, mesh.VertexIndexes());
+    UpdateGeometry();
+}
+
+void MainWindow::Snowman()
+{
+    AnalyticTree tree;
+    Mesh mesh;
+
+    auto legs = std::make_shared<SDFSphere>(2.0, Vector(0, 0, 0));
+    legs->SetColor(Color(1.0, 1.0, 1.0));
+
+    auto body = std::make_shared<SDFSphere>(1.5, Vector(0, 0, 3));
+    body->SetColor(Color(1.0, 1.0, 1.0));
+
+    auto head = std::make_shared<SDFSphere>(1.0, Vector(0, 0, 5));
+    head->SetColor(Color(1.0, 1.0, 1.0));
+
+    auto union1 = std::make_shared<ImplicitUnion>(legs, body);
+    auto union2 = std::make_shared<ImplicitUnion>(union1, head);
+
+    auto root = std::make_shared<ImplicitScale>(union2, .5);
+    tree.SetRoot(root);
+    tree.Polygonize(256, mesh, Box(20.0));
+
+    std::vector<Color> cols;
+    cols.resize(mesh.Vertexes());
+
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = root->ColorAt(mesh.Vertex(i));
+    }
+
+    meshColor = MeshColor(mesh, cols, mesh.VertexIndexes());
+    UpdateGeometry();
+}
+
 static volatile double g_sink = 0.0;
 
 static double BenchmarkNode(const ImplicitNode &node,
@@ -430,15 +528,20 @@ void MainWindow::Benchmark()
     auto torus = std::make_shared<SDFTorus>(2.0, 0.5, Vector(0, 0, 0));
     auto box = std::make_shared<SDFBox>(1.0, 2.0, 1.0, Vector(0, 0, 0));
     auto ellipsoid = std::make_shared<SDFEllipsoid>(1.0, 2.0, 1.0, Vector(0.0, 0.0, 0.0));
+    auto cylinder = std::make_shared<SDFCylinder>(1, Vector(-3.5, 0, -3), Vector(-3.5, 0, -2));
+    auto cone = std::make_shared<SDFCone>(Vector(0.0, 0.0, 0.0), 2.0, 20.0);
 
     nodes.push_back({"Sphere", sphere});
     nodes.push_back({"Capsule", capsule});
     nodes.push_back({"Torus", torus});
     nodes.push_back({"Box", box});
+    nodes.push_back({"Cylinder", cylinder});
+    nodes.push_back({"Cone", cone});
     nodes.push_back({"Ellipsoid", ellipsoid});
-    nodes.push_back({"Union(sphere, box)", std::make_shared<ImplicitUnion>(sphere, box)});
-    nodes.push_back({"SmoothUnion(sphere, box)",
-                    std::make_shared<ImplicitSmoothUnion>(sphere, box, 0.5)});
+
+    // nodes.push_back({"Union(sphere, box)", std::make_shared<ImplicitUnion>(sphere, box)});
+    // nodes.push_back({"SmoothUnion(sphere, box)",
+    //                 std::make_shared<ImplicitSmoothUnion>(sphere, box, 0.5)});
 
     auto blob = std::make_shared<ImplicitBlob>(0.5);
     auto infBlob = std::make_shared<ImplicitBlob>(0.5);
@@ -580,61 +683,6 @@ void MainWindow::MeshQuality()
                       << ms <<  std::endl;
         }
     }
-}
-
-void MainWindow::Tentacle()
-{
-    AnalyticTree tree;
-    Mesh mesh;
-
-    auto capsule1 = std::make_shared<PotentialCapsule>(0.4, Vector(0, 0, 0),     Vector(0, 2, 0));
-    capsule1->SetColor(Color(1.0, 0.0, 0.0));
-    auto capsule2 = std::make_shared<PotentialCapsule>(0.3, Vector(0, 2, 0),     Vector(1.8, 3.2, 0));
-    capsule2->SetColor(Color(1.0, 0.0, 0.0));
-    auto capsule3 = std::make_shared<PotentialCapsule>(0.2, Vector(1.8, 3.2, 0), Vector(0.7, 1.2, 0));
-    capsule3->SetColor(Color(1.0, 0.0, 0.0));
-
-    auto blob = std::make_shared<ImplicitBlob>(0.5);
-    blob->AddPotential(capsule1);
-    blob->AddPotential(capsule2);
-    blob->AddPotential(capsule3);
-
-    auto capsule4 = std::make_shared<SDFCapsule>(0.4, Vector(0, 0, -2),     Vector(0, 2, -2));
-    capsule4->SetColor(Color(0.0, 1.0, 0.0));
-    auto capsule5 = std::make_shared<SDFCapsule>(0.3, Vector(0, 2, -2),     Vector(1.8, 3.2, -2));
-    capsule5->SetColor(Color(0.0, 1.0, 0.0));
-    auto capsule6 = std::make_shared<SDFCapsule>(0.2, Vector(1.8, 3.2, -2), Vector(0.7, 1.2, -2));
-    capsule6->SetColor(Color(0.0, 1.0, 0.0));
-
-    auto union1 = std::make_shared<ImplicitSmoothUnion>(capsule4, capsule5, 0.3);
-    auto union2 = std::make_shared<ImplicitSmoothUnion>(union1,   capsule6, 0.3);
-    auto union3 = std::make_shared<ImplicitUnion>(union2, blob);
-
-    auto capsule7 = std::make_shared<SDFCapsule>(0.4, Vector(0, 0, 2),     Vector(0, 2, 2));
-    capsule7->SetColor(Color(0.0, 0.0, 1.0));
-    auto capsule8 = std::make_shared<SDFCapsule>(0.3, Vector(0, 2, 2),     Vector(1.8, 3.2, 2));
-    capsule8->SetColor(Color(0.0, 0.0, 1.0));
-    auto capsule9 = std::make_shared<SDFCapsule>(0.2, Vector(1.8, 3.2, 2), Vector(0.7, 1.2, 2));
-    capsule9->SetColor(Color(0.0, 0.0, 1.0));
-
-    auto union4 = std::make_shared<ImplicitSmoothUnion>(capsule7, capsule8, 1.2);
-    auto union5 = std::make_shared<ImplicitSmoothUnion>(union4,   capsule9, 1.2);
-    auto union6 = std::make_shared<ImplicitUnion>(union5, union3);
-
-    auto root = union6;
-    tree.SetRoot(root);
-    tree.Polygonize(150, mesh, Box(10.0));
-
-    std::vector<Color> cols;
-    cols.resize(mesh.Vertexes());
-
-    for (size_t i = 0; i < cols.size(); i++)
-    {
-        cols[i] = root->ColorAt(mesh.Vertex(i));
-    }
-
-    meshColor = MeshColor(mesh, cols, mesh.VertexIndexes());
-    UpdateGeometry();
 }
 
 void MainWindow::UpdateGeometry()
