@@ -262,6 +262,19 @@ p, li { white-space: pre-wrap; }
         <string>Snowman</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="candle">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>480</y>
+         <width>86</width>
+         <height>26</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Candle</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>

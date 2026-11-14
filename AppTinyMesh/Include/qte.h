@@ -48,6 +48,7 @@ class MainWindow : public QMainWindow
 
     void Tentacle();
     void Snowman();
+    void Candle();
 
     void ResetCamera();
     void UpdateMaterial();

@@ -46,6 +46,7 @@ void MainWindow::CreateActions()
 
     CREATE_SCENE(tentacle, Tentacle);
     CREATE_SCENE(snowman, Snowman);
+    CREATE_SCENE(candle, Candle);
 
     CREATE_SCENE(resetcameraButton, ResetCamera);
     CREATE_SCENE(wireframe, UpdateMaterial);
@@ -477,6 +478,63 @@ void MainWindow::Snowman()
     auto root = union6;
     tree.SetRoot(root);
     tree.Polygonize(256, mesh, Box(10.0));
+
+    std::vector<Color> cols;
+    cols.resize(mesh.Vertexes());
+
+    for (size_t i = 0; i < cols.size(); i++)
+    {
+        cols[i] = root->ColorAt(mesh.Vertex(i));
+    }
+
+    meshColor = MeshColor(mesh, cols, mesh.VertexIndexes());
+    UpdateGeometry();
+}
+
+void MainWindow::Candle()
+{
+    AnalyticTree tree;
+    Mesh mesh;
+
+    double offset = -0.4;
+
+    auto diggingCapsule = std::make_shared<SDFCapsule>(0.3, Vector(0, 0, 4), Vector(0, 0, 4.5));
+
+    auto wick = std::make_shared<SDFCylinder>(0.1, Vector(0, 0, 3.5), Vector(0, 0, 4.5));
+    wick->SetColor(Color(0.0, 0.0, 0.0));
+
+    auto body = std::make_shared<SDFCylinder>(0.5, Vector(0, 0, 0), Vector(0, 0, 4));
+    body->SetColor(Color(216.0/255.0, 205.0/255.0, 202.0/255.0));
+
+    auto melting = std::make_shared<ImplicitBlob>(0.4);
+
+    auto meltingCapsule = std::make_shared<PotentialCapsule>(0.5, Vector(offset, 0, 3), Vector(offset, 0, 3.8));
+    meltingCapsule->SetColor(Color(216.0/255.0, 205.0/255.0, 202.0/255.0));
+
+    auto meltingSphere = std::make_shared<PotentialSphere>(0.5, Vector(offset, 0, 3));
+    meltingSphere->SetColor(Color(216.0/255.0, 205.0/255.0, 202.0/255.0));
+
+    melting->AddPotential(meltingCapsule);
+    melting->AddPotential(meltingSphere);
+
+    auto fire = std::make_shared<ImplicitBlob>(0.25);
+    auto fireBase = std::make_shared<PotentialSphere>(0.2, Vector(0, 0, 4.4));
+    fireBase->SetColor(Color(224.0/255.0, 116.0/255.0, 30.0/255.0));
+
+    auto fireHead = std::make_shared<PotentialCapsule>(0.1, Vector(0, 0, 4.8), Vector(0, 0, 5.0));
+    fireHead->SetColor(Color(224.0/255.0, 116.0/255.0, 30.0/255.0));
+
+    fire->AddPotential(fireBase);
+    fire->AddPotential(fireHead);
+
+    auto union1 = std::make_shared<ImplicitUnion>(melting, body);
+    auto dig = std::make_shared<ImplicitDifference>(union1, diggingCapsule);
+    auto union2 = std::make_shared<ImplicitUnion>(dig, wick);
+    auto union3 = std::make_shared<ImplicitUnion>(union2, fire);
+
+    auto root = union3;
+    tree.SetRoot(root);
+    tree.Polygonize(150, mesh, Box(10.0));
 
     std::vector<Color> cols;
     cols.resize(mesh.Vertexes());
