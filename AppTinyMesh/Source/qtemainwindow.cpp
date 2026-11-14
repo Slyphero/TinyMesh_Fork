@@ -456,12 +456,27 @@ void MainWindow::Snowman()
     auto head = std::make_shared<SDFSphere>(1.0, Vector(0, 0, 5));
     head->SetColor(Color(1.0, 1.0, 1.0));
 
+    auto nose = std::make_shared<SDFCone>(Vector(0, -2, 5), 1.0, 5.0);
+    nose->SetColor(Color( 251.0/255.0, 132.0/255.0, 43.0/255.0 ));
+
+    auto scarf = std::make_shared<SDFTorus>(1.1, 0.2, Vector(0, 0, 4.4));
+    scarf->SetColor(Color(1.0, 0.0, 0.0));
+
+    auto button1 = std::make_shared<SDFCylinder>(0.2, Vector(0.0, -1.5, 3.3), Vector(0.0, -1.6, 3.3));
+    button1->SetColor(Color(0.0, 0.0, 0.0));
+    auto button2 = std::make_shared<SDFCylinder>(0.2, Vector(0.0, -1.5, 2.7), Vector(0.0, -1.6, 2.7));
+    button2->SetColor(Color(0.0, 0.0, 0.0));
+
     auto union1 = std::make_shared<ImplicitUnion>(legs, body);
     auto union2 = std::make_shared<ImplicitUnion>(union1, head);
+    auto union3 = std::make_shared<ImplicitUnion>(nose, union2);
+    auto union4 = std::make_shared<ImplicitUnion>(scarf, union3);
+    auto union5 = std::make_shared<ImplicitUnion>(button1, union4);
+    auto union6 = std::make_shared<ImplicitUnion>(button2, union5);
 
-    auto root = std::make_shared<ImplicitScale>(union2, .5);
+    auto root = union6;
     tree.SetRoot(root);
-    tree.Polygonize(256, mesh, Box(20.0));
+    tree.Polygonize(256, mesh, Box(10.0));
 
     std::vector<Color> cols;
     cols.resize(mesh.Vertexes());
